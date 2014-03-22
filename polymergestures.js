@@ -7,8 +7,8 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 (function() {
-  var thisFile = 'pointerevents.js';
-  var scopeName = 'PointerEventsPolyfill';
+  var thisFile = 'polymergestures.js';
+  var scopeName = 'PolymerGestures';
   var modules = [
     'src/scope.js',
     'src/targetfind.js',

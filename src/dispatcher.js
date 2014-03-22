@@ -139,7 +139,7 @@
         es.unregister.call(es, element);
       }
     },
-    contains: scope.external.contains || function(container, contained) {
+    contains: function(container, contained) {
       return container.contains(contained);
     },
     // EVENTS
@@ -214,10 +214,10 @@
         this.removeEvent(target, e);
       }, this);
     },
-    addEvent: scope.external.addEvent || function(target, eventName) {
+    addEvent: function(target, eventName) {
       target.addEventListener(eventName, this.boundHandler);
     },
-    removeEvent: scope.external.removeEvent || function(target, eventName) {
+    removeEvent: function(target, eventName) {
       target.removeEventListener(eventName, this.boundHandler);
     },
     // EVENT CREATION AND TRACKING
@@ -313,7 +313,7 @@
      * @param {Event} inEvent The event to be dispatched.
      * @return {Boolean} True if an event handler returns true, false otherwise.
      */
-    dispatchEvent: scope.external.dispatchEvent || function(inEvent) {
+    dispatchEvent: function(inEvent) {
       var t = this.getTarget(inEvent);
       if (t) {
         return t.dispatchEvent(inEvent);
