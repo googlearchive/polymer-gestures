@@ -159,7 +159,7 @@
       // Touch identifiers can start at 0.
       // Add 2 to the touch identifier for compatibility.
       var id = e.pointerId = inTouch.identifier + 2;
-      e.target = captureInfo[id] || this.findTarget(e);
+      e.target = captureInfo[id] || this.currentTouchEvent.target;
       e.bubbles = true;
       e.cancelable = true;
       e.detail = this.clickCount;
@@ -308,6 +308,7 @@
     },
     upOut: function(inPointer) {
       if (!this.scrolling) {
+        inPointer.target = scope.findTarget(inPointer);
         dispatcher.up(inPointer);
         dispatcher.out(inPointer);
         dispatcher.leave(inPointer);
