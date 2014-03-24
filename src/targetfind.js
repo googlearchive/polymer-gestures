@@ -64,6 +64,9 @@
       }
     },
     owner: function(element) {
+      if (!element) {
+        return document;
+      }
       var s = element;
       // walk up until you hit the shadow root or document
       while (s.parentNode) {

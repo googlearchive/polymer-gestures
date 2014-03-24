@@ -321,7 +321,9 @@
     dispatchEvent: function(inEvent) {
       var t = this.getTarget(inEvent);
       if (t) {
-        this.gestureQueue.push(inEvent);
+        var clone = this.cloneEvent(inEvent);
+        clone.target = inEvent._target;
+        this.gestureQueue.push(clone);
         requestAnimationFrame(this.boundGestureTrigger);
         return t.dispatchEvent(inEvent);
       }
