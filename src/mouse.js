@@ -28,8 +28,6 @@
       'mousedown',
       'mousemove',
       'mouseup',
-      'mouseover',
-      'mouseout'
     ],
     register: function(target) {
       dispatcher.listen(target, this.events);
@@ -52,12 +50,6 @@
     },
     prepareEvent: function(inEvent) {
       var e = dispatcher.cloneEvent(inEvent);
-      // forward mouse preventDefault
-      var pd = e.preventDefault;
-      e.preventDefault = function() {
-        inEvent.preventDefault();
-        pd();
-      };
       e.pointerId = this.POINTER_ID;
       e.isPrimary = true;
       e.pointerType = this.POINTER_TYPE;
@@ -75,42 +67,23 @@
           this.cancel(inEvent);
         }
         var e = this.prepareEvent(inEvent);
-        pointermap.set(this.POINTER_ID, inEvent);
+        pointermap.set(this.POINTER_ID, inEvent.target);
         dispatcher.down(e);
       }
     },
     mousemove: function(inEvent) {
       if (!this.isEventSimulatedFromTouch(inEvent)) {
         var e = this.prepareEvent(inEvent);
+        e.target = pointermap.get(this.POINTER_ID);
         dispatcher.move(e);
       }
     },
     mouseup: function(inEvent) {
       if (!this.isEventSimulatedFromTouch(inEvent)) {
-        var p = pointermap.get(this.POINTER_ID);
-        if (p && p.button === inEvent.button) {
-          var e = this.prepareEvent(inEvent);
-          dispatcher.up(e);
-          this.cleanupMouse();
-        }
-      }
-    },
-    mouseover: function(inEvent) {
-      if (!this.isEventSimulatedFromTouch(inEvent)) {
         var e = this.prepareEvent(inEvent);
-        dispatcher.enterOver(e);
+        dispatcher.up(e);
+        this.cleanupMouse();
       }
-    },
-    mouseout: function(inEvent) {
-      if (!this.isEventSimulatedFromTouch(inEvent)) {
-        var e = this.prepareEvent(inEvent);
-        dispatcher.leaveOut(e);
-      }
-    },
-    cancel: function(inEvent) {
-      var e = this.prepareEvent(inEvent);
-      dispatcher.cancel(e);
-      this.cleanupMouse();
     },
     cleanupMouse: function() {
       pointermap['delete'](this.POINTER_ID);

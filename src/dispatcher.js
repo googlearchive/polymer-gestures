@@ -143,53 +143,18 @@
         es.unregister.call(es, element);
       }
     },
-    contains: function(container, contained) {
-      return container.contains(contained);
-    },
     // EVENTS
     down: function(inEvent) {
-      inEvent.bubbles = true;
       this.fireEvent('pointerdown', inEvent);
     },
     move: function(inEvent) {
-      inEvent.bubbles = true;
       this.fireEvent('pointermove', inEvent);
     },
     up: function(inEvent) {
-      inEvent.bubbles = true;
       this.fireEvent('pointerup', inEvent);
     },
-    enter: function(inEvent) {
-      inEvent.bubbles = false;
-      this.fireEvent('pointerenter', inEvent);
-    },
-    leave: function(inEvent) {
-      inEvent.bubbles = false;
-      this.fireEvent('pointerleave', inEvent);
-    },
-    over: function(inEvent) {
-      inEvent.bubbles = true;
-      this.fireEvent('pointerover', inEvent);
-    },
-    out: function(inEvent) {
-      inEvent.bubbles = true;
-      this.fireEvent('pointerout', inEvent);
-    },
     cancel: function(inEvent) {
-      inEvent.bubbles = true;
       this.fireEvent('pointercancel', inEvent);
-    },
-    leaveOut: function(event) {
-      this.out(event);
-      if (!this.contains(event.target, event.relatedTarget)) {
-        this.leave(event);
-      }
-    },
-    enterOver: function(event) {
-      this.over(event);
-      if (!this.contains(event.target, event.relatedTarget)) {
-        this.enter(event);
-      }
     },
     // LISTENER LOGIC
     eventHandler: function(inEvent) {

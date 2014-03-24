@@ -145,9 +145,10 @@
       }
       return ret;
     },
-    findTarget: function(touch) {
+    findTarget: function(touch, id) {
       if (this.currentTouchEvent.type === 'touchmove') {
-        return this.currentTouchEvent.target;
+        // reuse target we found in touchstart
+        return pointermap.get(id).target;
       }
       return scope.findTarget(touch);
     },
@@ -158,7 +159,7 @@
       // Touch identifiers can start at 0.
       // Add 2 to the touch identifier for compatibility.
       var id = e.pointerId = inTouch.identifier + 2;
-      e.target = this.findTarget(inTouch);
+      e.target = this.findTarget(inTouch, id);
       e.bubbles = true;
       e.cancelable = true;
       e.detail = this.clickCount;
@@ -249,17 +250,13 @@
       this.dedupSynthMouse(inEvent);
       if (!this.scrolling) {
         this.clickCount++;
-        this.processTouches(inEvent, this.overDown);
+        this.processTouches(inEvent, this.down);
       }
     },
-    overDown: function(inPointer) {
+    down: function(inPointer) {
       var p = pointermap.set(inPointer.pointerId, {
         target: inPointer.target,
-        out: inPointer,
-        outTarget: inPointer.target
       });
-      dispatcher.over(inPointer);
-      dispatcher.enter(inPointer);
       dispatcher.down(inPointer);
     },
     touchmove: function(inEvent) {
@@ -269,58 +266,30 @@
           this.touchcancel(inEvent);
         } else {
           inEvent.preventDefault();
-          this.processTouches(inEvent, this.moveOverOut);
+          this.processTouches(inEvent, this.move);
         }
       }
     },
-    moveOverOut: function(inPointer) {
-      var event = inPointer;
-      var pointer = pointermap.get(event.pointerId);
+    move: function(inPointer) {
+      var pointer = pointermap.get(inPointer.pointerId);
       // a finger drifted off the screen, ignore it
       if (!pointer) {
         return;
       }
-      var outEvent = pointer.out;
-      var outTarget = pointer.outTarget;
-      dispatcher.move(event);
-      if (outEvent && outTarget !== event.target) {
-        outEvent.relatedTarget = event.target;
-        event.relatedTarget = outTarget;
-        // recover from retargeting by shadow
-        outEvent.target = outTarget;
-        if (event.target) {
-          dispatcher.leaveOut(outEvent);
-          dispatcher.enterOver(event);
-        } else {
-          // clean up case when finger leaves the screen
-          event.target = outTarget;
-          event.relatedTarget = null;
-          this.cancelOut(event);
-        }
-      }
-      pointer.out = event;
-      pointer.outTarget = event.target;
+      dispatcher.move(inPointer);
     },
     touchend: function(inEvent) {
       this.dedupSynthMouse(inEvent);
-      this.processTouches(inEvent, this.upOut);
+      this.processTouches(inEvent, this.up);
     },
-    upOut: function(inPointer) {
+    up: function(inPointer) {
       if (!this.scrolling) {
         dispatcher.up(inPointer);
-        dispatcher.out(inPointer);
-        dispatcher.leave(inPointer);
       }
       this.cleanUpPointer(inPointer);
     },
     touchcancel: function(inEvent) {
-      this.processTouches(inEvent, this.cancelOut);
-    },
-    cancelOut: function(inPointer) {
-      dispatcher.cancel(inPointer);
-      dispatcher.out(inPointer);
-      dispatcher.leave(inPointer);
-      this.cleanUpPointer(inPointer);
+      this.processTouches(inEvent, this.up);
     },
     cleanUpPointer: function(inPointer) {
       pointermap['delete'](inPointer.pointerId);
