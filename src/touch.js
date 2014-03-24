@@ -9,7 +9,6 @@
 
 (function(scope) {
   var dispatcher = scope.dispatcher;
-  var captureInfo = dispatcher.captureInfo;
   var allShadows = scope.targetFinding.allShadows.bind(scope.targetFinding);
   var pointermap = dispatcher.pointermap;
   var touchMap = Array.prototype.map.call.bind(Array.prototype.map);

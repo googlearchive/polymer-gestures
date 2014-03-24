@@ -21,7 +21,6 @@
     'src/touch.js',
     'src/ms.js',
     'src/platform-events.js',
-    'src/capture.js',
     'src/track.js',
     'src/tap.js'
   ];

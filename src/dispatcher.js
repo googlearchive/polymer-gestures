@@ -99,7 +99,6 @@
   var dispatcher = {
     pointermap: new scope.PointerMap(),
     eventMap: Object.create(null),
-    captureInfo: Object.create(null),
     // Scope objects for native events.
     // This exists for ease of testing.
     eventSources: Object.create(null),
@@ -194,10 +193,10 @@
     },
     // LISTENER LOGIC
     eventHandler: function(inEvent) {
-      // This is used to prevent multiple dispatch of pointerevents from
+      // This is used to prevent multiple dispatch of events from
       // platform events. This can happen when two elements in different scopes
       // are set up to create pointer events, which is relevant to Shadow DOM.
-      if (inEvent._handledByPE) {
+      if (inEvent._handledByPG) {
         return;
       }
       var type = inEvent.type;
@@ -205,7 +204,7 @@
       if (fn) {
         fn(inEvent);
       }
-      inEvent._handledByPE = true;
+      inEvent._handledByPG = true;
     },
     // set up event listeners
     listen: function(target, events) {
@@ -235,14 +234,8 @@
      * @return {Event} A PointerEvent of type `inType`
      */
     makeEvent: function(inType, inEvent) {
-      // relatedTarget must be null if pointer is captured
-      if (this.captureInfo[inEvent.pointerId]) {
-        inEvent.relatedTarget = null;
-      }
       var e = new PointerEvent(inType, inEvent);
-      if (inEvent.preventDefault) {
-        e.preventDefault = inEvent.preventDefault;
-      }
+      e.preventDefault = inEvent.preventDefault;
       e._target = e._target || inEvent.target;
       return e;
     },
@@ -273,44 +266,8 @@
         }
       }
       // keep the semantics of preventDefault
-      if (inEvent.preventDefault) {
-        eventCopy.preventDefault = function() {
-          inEvent.preventDefault();
-        };
-      }
+      eventCopy.preventDefault = inEvent.preventDefault;
       return eventCopy;
-    },
-    getTarget: function(inEvent) {
-      // if pointer capture is set, route all events for the specified pointerId
-      // to the capture target
-      return this.captureInfo[inEvent.pointerId] || inEvent._target;
-    },
-    setCapture: function(inPointerId, inTarget) {
-      if (this.captureInfo[inPointerId]) {
-        this.releaseCapture(inPointerId);
-      }
-      this.captureInfo[inPointerId] = inTarget;
-      var e = document.createEvent('Event');
-      e.initEvent('gotpointercapture', true, false);
-      e.pointerId = inPointerId;
-      this.implicitRelease = this.releaseCapture.bind(this, inPointerId);
-      document.addEventListener('pointerup', this.implicitRelease);
-      document.addEventListener('pointercancel', this.implicitRelease);
-      e._target = inTarget;
-      this.asyncDispatchEvent(e);
-    },
-    releaseCapture: function(inPointerId) {
-      var t = this.captureInfo[inPointerId];
-      if (t) {
-        var e = document.createEvent('Event');
-        e.initEvent('lostpointercapture', true, false);
-        e.pointerId = inPointerId;
-        this.captureInfo[inPointerId] = undefined;
-        document.removeEventListener('pointerup', this.implicitRelease);
-        document.removeEventListener('pointercancel', this.implicitRelease);
-        e._target = t;
-        this.asyncDispatchEvent(e);
-      }
     },
     /**
      * Dispatches the event to its target.
@@ -319,8 +276,9 @@
      * @return {Boolean} True if an event handler returns true, false otherwise.
      */
     dispatchEvent: function(inEvent) {
-      var t = this.getTarget(inEvent);
+      var t = inEvent._target;
       if (t) {
+        // clone the event for the gesture system to process
         var clone = this.cloneEvent(inEvent);
         clone.target = inEvent._target;
         this.gestureQueue.push(clone);
@@ -329,6 +287,7 @@
       }
     },
     gestureTrigger: function() {
+      // process the gesture queue
       for (var i = 0, e; i < this.gestureQueue.length; i++) {
         e = this.gestureQueue[i];
         for (var j = 0, g; j < this.gestures.length; j++) {
@@ -339,9 +298,6 @@
         }
       }
       this.gestureQueue.length = 0;
-    },
-    asyncDispatchEvent: function(inEvent) {
-      requestAnimationFrame(this.dispatchEvent.bind(this, inEvent));
     }
   };
   dispatcher.boundHandler = dispatcher.eventHandler.bind(dispatcher);
