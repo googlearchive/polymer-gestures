@@ -61,14 +61,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script>
       var events = [
         // base events
-        'click',
         'pointerdown',
         'pointerup',
         'pointermove',
         'pointerover',
         'pointerout',
         'pointerenter',
-        'pointerleave'
+        'pointerleave',
+        'trackstart',
+        'track',
+        'trackend',
+        'tap'
       ];
       function find(/*...inEls*/) {
         [].forEach.call(arguments, function(e) {

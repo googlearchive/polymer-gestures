@@ -104,6 +104,8 @@
     // This exists for ease of testing.
     eventSources: Object.create(null),
     eventSourceList: [],
+    gestures: [],
+    gestureQueue: [],
     /**
      * Add a new event source that will generate pointer events.
      *
@@ -124,6 +126,9 @@
         this.eventSources[name] = s;
         this.eventSourceList.push(s);
       }
+    },
+    registerGesture: function(name, source) {
+      this.gestures.push(source);
     },
     register: function(element) {
       var l = this.eventSourceList.length;
@@ -316,14 +321,29 @@
     dispatchEvent: function(inEvent) {
       var t = this.getTarget(inEvent);
       if (t) {
+        this.gestureQueue.push(inEvent);
+        requestAnimationFrame(this.boundGestureTrigger);
         return t.dispatchEvent(inEvent);
       }
+    },
+    gestureTrigger: function() {
+      for (var i = 0, e; i < this.gestureQueue.length; i++) {
+        e = this.gestureQueue[i];
+        for (var j = 0, g; j < this.gestures.length; j++) {
+          g = this.gestures[j];
+          if (g.events.indexOf(e.type) >= 0) {
+            g[e.type].call(g, e);
+          }
+        }
+      }
+      this.gestureQueue.length = 0;
     },
     asyncDispatchEvent: function(inEvent) {
       requestAnimationFrame(this.dispatchEvent.bind(this, inEvent));
     }
   };
   dispatcher.boundHandler = dispatcher.eventHandler.bind(dispatcher);
+  dispatcher.boundGestureTrigger = dispatcher.gestureTrigger.bind(dispatcher);
   scope.dispatcher = dispatcher;
   scope.register = dispatcher.register.bind(dispatcher);
   scope.unregister = dispatcher.unregister.bind(dispatcher);

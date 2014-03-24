@@ -84,6 +84,47 @@
         s = document;
       }
       return this.searchRoot(s, x, y);
+    },
+    LCA: function(a, b) {
+      if (a === b) {
+        return a;
+      }
+      // fast case, a is a direct descendant of b or vice versa
+      if (a.contains) {
+        if (a.contains(b)) {
+          return a;
+        }
+        if (b.contains(a)) {
+          return b;
+        }
+      }
+      var adepth = this.depth(a);
+      var bdepth = this.depth(b);
+      var d = adepth - bdepth;
+      if (d > 0) {
+        a = this.walk(a, d);
+      } else {
+        b = this.walk(b, -d);
+      }
+      while(a && b && a !== b) {
+        a = this.walk(a, 1);
+        b = this.walk(b, 1);
+      }
+      return a;
+    },
+    walk: function(n, u) {
+      for (var i = 0; n && (i < u); i++) {
+        n = n.parentNode || n.host;
+      }
+      return n;
+    },
+    depth: function(n) {
+      var d = 0;
+      while(n) {
+        d++;
+        n = n.parentNode || n.host;
+      }
+      return d;
     }
   };
   scope.targetFinding = target;
