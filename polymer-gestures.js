@@ -7,7 +7,7 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 (function() {
-  var thisFile = 'polymergestures.js';
+  var thisFile = 'polymer-gestures.js';
   var scopeName = 'PolymerGestures';
   var modules = [
     'src/scope.js',
