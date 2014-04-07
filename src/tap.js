@@ -42,12 +42,10 @@
   var pointermap = new scope.PointerMap();
   var tap = {
     events: [
-      'pointerdown',
-      'pointerup',
-      'pointercancel',
-      'keyup'
+      'down',
+      'up'
     ],
-    pointerdown: function(inEvent) {
+    down: function(inEvent) {
       if (inEvent.isPrimary && !inEvent.tapPrevented) {
         pointermap.set(inEvent.pointerId, {
           target: inEvent.target,
@@ -64,7 +62,7 @@
       }
       return true;
     },
-    pointerup: function(inEvent) {
+    up: function(inEvent) {
       var start = pointermap.get(inEvent.pointerId);
       if (start && this.shouldTap(inEvent, start)) {
         var t = scope.targetFinding.LCA(start.target, inEvent.target);
@@ -82,24 +80,6 @@
         }
       }
       pointermap.delete(inEvent.pointerId);
-    },
-    pointercancel: function(inEvent) {
-      pointermap.delete(inEvent.pointerId);
-    },
-    keyup: function(inEvent) {
-      var code = inEvent.keyCode;
-      // 32 == spacebar
-      if (code === 32) {
-        var t = inEvent.target;
-        if (!(t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement)) {
-          dispatcher.dispatchEvent(dispatcher.makeEvent('tap', {
-            x: 0,
-            y: 0,
-            detail: 0,
-            pointerType: 'unavailable'
-          }), t);
-        }
-      }
     }
   };
   dispatcher.registerGesture('tap', tap);

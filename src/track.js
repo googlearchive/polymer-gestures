@@ -108,10 +108,9 @@
    var pointermap = new scope.PointerMap();
    var track = {
      events: [
-       'pointerdown',
-       'pointermove',
-       'pointerup',
-       'pointercancel'
+       'down',
+       'move',
+       'up',
      ],
      WIGGLE_THRESHOLD: 4,
      clampDir: function(inDelta) {
@@ -158,7 +157,7 @@
        });
        t.downTarget.dispatchEvent(e);
      },
-     pointerdown: function(inEvent) {
+     down: function(inEvent) {
        if (inEvent.isPrimary && (inEvent.pointerType === 'mouse' ? inEvent.buttons === 1 : true)) {
          var p = {
            downEvent: inEvent,
@@ -172,7 +171,7 @@
          pointermap.set(inEvent.pointerId, p);
        }
      },
-     pointermove: function(inEvent) {
+     move: function(inEvent) {
        var p = pointermap.get(inEvent.pointerId);
        if (p) {
          if (!p.tracking) {
@@ -189,7 +188,7 @@
          }
        }
      },
-     pointerup: function(inEvent) {
+     up: function(inEvent) {
        var p = pointermap.get(inEvent.pointerId);
        if (p) {
          if (p.tracking) {
@@ -197,9 +196,6 @@
          }
          pointermap.delete(inEvent.pointerId);
        }
-     },
-     pointercancel: function(inEvent) {
-       this.pointerup(inEvent);
      }
    };
    dispatcher.registerGesture('track', track);

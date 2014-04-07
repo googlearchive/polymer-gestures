@@ -146,16 +146,14 @@
     },
     // EVENTS
     down: function(inEvent) {
-      this.fireEvent('pointerdown', inEvent);
+      this.fireEvent('down', inEvent);
     },
     move: function(inEvent) {
-      this.fireEvent('pointermove', inEvent);
+      // pipe move events into gesture queue directly
+      this.fillGestureQueue(inEvent);
     },
     up: function(inEvent) {
-      this.fireEvent('pointerup', inEvent);
-    },
-    cancel: function(inEvent) {
-      this.fireEvent('pointercancel', inEvent);
+      this.fireEvent('up', inEvent);
     },
     // LISTENER LOGIC
     eventHandler: function(inEvent) {
@@ -247,8 +245,7 @@
         // clone the event for the gesture system to process
         var clone = this.cloneEvent(inEvent);
         clone.target = inEvent._target;
-        this.gestureQueue.push(clone);
-        requestAnimationFrame(this.boundGestureTrigger);
+        this.fillGestureQueue(clone);
         return t.dispatchEvent(inEvent);
       }
     },
@@ -264,6 +261,13 @@
         }
       }
       this.gestureQueue.length = 0;
+    },
+    fillGestureQueue: function(ev) {
+      // only trigger the gesture queue once
+      if (!this.gestureQueue.length) {
+        requestAnimationFrame(this.boundGestureTrigger);
+      }
+      this.gestureQueue.push(ev);
     }
   };
   dispatcher.boundHandler = dispatcher.eventHandler.bind(dispatcher);
