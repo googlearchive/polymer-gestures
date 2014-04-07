@@ -2,7 +2,7 @@
   "src/scope.js",
   "src/targetfind.js",
   "src/touch-action.js",
-  "src/PointerEvent.js",
+  "src/eventFactory.js",
   "src/pointermap.js",
   "src/dispatcher.js",
   "src/installer.js",

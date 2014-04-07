@@ -135,26 +135,27 @@
        if (dd.y) {
          t.yDirection = this.clampDir(dd.y);
        }
-       var e = document.createEvent('Event');
-       e.initEvent(inType, true, true);
-       e.dx = d.x;
-       e.dy = d.y;
-       e.ddx = dd.x;
-       e.ddy = dd.y;
-       e.x = inEvent.x;
-       e.y = inEvent.y;
-       e.clientX = inEvent.clientX;
-       e.clientY = inEvent.clientY;
-       e.pageX = inEvent.pageX;
-       e.pageY = inEvent.pageY;
-       e.screenX = inEvent.screenX;
-       e.screenY = inEvent.screenY;
-       e.xDirection = t.xDirection;
-       e.yDirection = t.yDirection;
-       e.trackInfo = t.trackInfo;
-       e.relatedTarget = inEvent.target;
-       e.pointerType = inEvent.pointerType;
-       t.lastMoveEvent = inEvent;
+       var e = eventFactory.makeGestureEvent(inType, {
+         bubbles: true,
+         cancelable: true,
+         dx: d.x,
+         dy: d.y,
+         ddx: dd.x,
+         ddy: dd.y,
+         x: inEvent.x,
+         y: inEvent.y,
+         clientX: inEvent.clientX,
+         clientY: inEvent.clientY,
+         pageX: inEvent.pageX,
+         pageY: inEvent.pageY,
+         screenX: inEvent.screenX,
+         screenY: inEvent.screenY,
+         xDirection: t.xDirection,
+         yDirection: t.yDirection,
+         trackInfo: t.trackInfo,
+         relatedTarget: inEvent.target,
+         pointerType: inEvent.pointerType
+       });
        t.downTarget.dispatchEvent(e);
      },
      pointerdown: function(inEvent) {

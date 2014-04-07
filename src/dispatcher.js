@@ -84,6 +84,7 @@
 
   var HAS_SVG_INSTANCE = (typeof SVGElementInstance !== 'undefined');
 
+  var eventFactory = scope.eventFactory;
   /**
    * This module is for normalizing events. Mouse and Touch events will be
    * collected here, and fire PointerEvents that have the same semantics, no
@@ -199,7 +200,7 @@
      * @return {Event} A PointerEvent of type `inType`
      */
     makeEvent: function(inType, inEvent) {
-      var e = new PointerEvent(inType, inEvent);
+      var e = eventFactory.makePointerEvent(inType, inEvent);
       e.preventDefault = inEvent.preventDefault;
       e._target = e._target || inEvent.target;
       return e;

@@ -38,6 +38,7 @@
  */
 (function(scope) {
   var dispatcher = scope.dispatcher;
+  var eventFactory = scope.eventFactory;
   var pointermap = new scope.PointerMap();
   var tap = {
     events: [
@@ -68,13 +69,15 @@
       if (start && this.shouldTap(inEvent, start)) {
         var t = scope.targetFinding.LCA(start.target, inEvent.target);
         if (t) {
-          var e = document.createEvent('Event');
-          e.initEvent('tap', true, true);
-          e.x = inEvent.clientX;
-          e.y = inEvent.clientY;
-          e.detail = inEvent.detail;
-          e.pointerType = inEvent.pointerType;
-          e.pointerId = inEvent.pointerId;
+          var e = eventFactory.makeGesturEvent('tap', {
+            bubbles: true,
+            cancelable: true,
+            x: inEvent.clientX,
+            y: inEvent.clientY,
+            detail: inEvent.detail,
+            pointerType: inEvent.pointerType,
+            pointerId: inEvent.pointerId
+          });
           t.dispatchEvent(e);
         }
       }
