@@ -15,23 +15,16 @@
 (function(scope) {
   var dispatcher = scope.dispatcher;
 
-  // only activate if this platform does not have pointer events
-  if (window.PointerEvent !== scope.PointerEvent) {
-
-    if (window.navigator.msPointerEnabled) {
-      var tp = window.navigator.msMaxTouchPoints;
-      Object.defineProperty(window.navigator, 'maxTouchPoints', {
-        value: tp,
-        enumerable: true
-      });
-      dispatcher.registerSource('ms', scope.msEvents);
-    } else {
-      dispatcher.registerSource('mouse', scope.mouseEvents);
-      if (window.ontouchstart !== undefined) {
-        dispatcher.registerSource('touch', scope.touchEvents);
-      }
+  if (window.PointerEvent) {
+    dispatcher.registerSouce('pointer', scope.pointerEvents);
+  } else if (window.navigator.msPointerEnabled) {
+    dispatcher.registerSource('ms', scope.msEvents);
+  } else {
+    dispatcher.registerSource('mouse', scope.mouseEvents);
+    if (window.ontouchstart !== undefined) {
+      dispatcher.registerSource('touch', scope.touchEvents);
     }
-
-    dispatcher.register(document);
   }
+
+  dispatcher.register(document);
 })(window.PolymerGestures);

@@ -10,56 +10,44 @@
 (function(scope) {
   var dispatcher = scope.dispatcher;
   var pointermap = dispatcher.pointermap;
-  var HAS_BITMAP_TYPE = window.MSPointerEvent && typeof window.MSPointerEvent.MSPOINTER_TYPE_MOUSE === 'number';
-  var msEvents = {
+  var pointerEvents = {
     events: [
-      'MSPointerDown',
-      'MSPointerMove',
-      'MSPointerUp',
-      'MSPointerCancel',
+      'pointerdown',
+      'pointermove',
+      'pointerup',
+      'pointercancel'
     ],
+    prepareEvent: function(inEvent) {
+      return dispatcher.cloneEvent(inEvent);
+    },
     register: function(target) {
       dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
       dispatcher.unlisten(target, this.events);
     },
-    POINTER_TYPES: [
-      '',
-      'unavailable',
-      'touch',
-      'pen',
-      'mouse'
-    ],
-    prepareEvent: function(inEvent) {
-      var e = inEvent;
-      if (HAS_BITMAP_TYPE) {
-        e = dispatcher.cloneEvent(inEvent);
-        e.pointerType = this.POINTER_TYPES[inEvent.pointerType];
-      }
-      return e;
-    },
     cleanup: function(id) {
       pointermap['delete'](id);
     },
-    MSPointerDown: function(inEvent) {
+    pointerdown: function(inEvent) {
       pointermap.set(inEvent.pointerId, inEvent);
       var e = this.prepareEvent(inEvent);
+      e.setPointerCapture(e.target);
       dispatcher.down(e);
     },
-    MSPointerMove: function(inEvent) {
+    pointermove: function(inEvent) {
       var e = this.prepareEvent(inEvent);
       dispatcher.move(e);
     },
-    MSPointerUp: function(inEvent) {
+    pointerup: function(inEvent) {
       var e = this.prepareEvent(inEvent);
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
     },
-    MSPointerCancel: function(inEvent) {
-      this.MSPointerUp(inEvent);
+    pointercancel: function(inEvent) {
+      this.pointerup(inEvent);
     }
   };
 
-  scope.msEvents = msEvents;
+  scope.pointerEvents = pointerEvents;
 })(window.PolymerGestures);

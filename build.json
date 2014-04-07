@@ -9,6 +9,7 @@
   "src/mouse.js",
   "src/touch.js",
   "src/ms.js",
+  "src/pointer.js",
   "src/platform-events.js",
   "src/track.js",
   "src/tap.js"
