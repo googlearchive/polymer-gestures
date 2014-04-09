@@ -61,10 +61,15 @@
     0
   ];
 
+  var NOP_FACTORY = function(){ return function(){}; };
+
   var eventFactory = {
+    // TODO(dfreedm): this is overridden by tap recognizer, needs review
+    preventTap: NOP_FACTORY,
     makeBaseEvent: function(inType, inDict) {
       var e = document.createEvent('Event');
       e.initEvent(inType, inDict.bubbles || false, inDict.cancelable || false);
+      e.preventTap = eventFactory.preventTap(e);
       return e;
     },
     makeGestureEvent: function(inType, inDict) {
@@ -75,6 +80,9 @@
         k = keys[i];
         e[k] = inDict[k];
       }
+      e.preventTap = function() {
+        e.tapPrevented = true;
+      };
       return e;
     },
     makePointerEvent: function(inType, inDict) {

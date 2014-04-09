@@ -105,6 +105,7 @@
 
  (function(scope) {
    var dispatcher = scope.dispatcher;
+   var eventFactory = scope.eventFactory;
    var pointermap = new scope.PointerMap();
    var track = {
      events: [

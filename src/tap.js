@@ -67,7 +67,7 @@
       if (start && this.shouldTap(inEvent, start)) {
         var t = scope.targetFinding.LCA(start.target, inEvent.target);
         if (t) {
-          var e = eventFactory.makeGesturEvent('tap', {
+          var e = eventFactory.makeGestureEvent('tap', {
             bubbles: true,
             cancelable: true,
             x: inEvent.clientX,
@@ -81,6 +81,12 @@
       }
       pointermap.delete(inEvent.pointerId);
     }
+  };
+  // patch eventFactory to remove id from tap's pointermap for preventTap calls
+  eventFactory.preventTap = function(e) {
+    return function() {
+      e.tapPrevented = true;
+    };
   };
   dispatcher.registerGesture('tap', tap);
 })(window.PolymerGestures);

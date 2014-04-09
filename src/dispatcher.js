@@ -42,7 +42,10 @@
     'currentTarget',
     'which',
     'pageX',
-    'pageY'
+    'pageY',
+    // gesture addons
+    'preventTap',
+    'tapPrevented'
   ];
 
   var CLONE_DEFAULTS = [
@@ -79,7 +82,9 @@
     null,
     0,
     0,
-    0
+    0,
+    function(){},
+    false
   ];
 
   var HAS_SVG_INSTANCE = (typeof SVGElementInstance !== 'undefined');
@@ -150,6 +155,7 @@
     },
     move: function(inEvent) {
       // pipe move events into gesture queue directly
+      inEvent.type = 'move';
       this.fillGestureQueue(inEvent);
     },
     up: function(inEvent) {
@@ -242,11 +248,12 @@
     dispatchEvent: function(inEvent) {
       var t = inEvent._target;
       if (t) {
+        t.dispatchEvent(inEvent);
         // clone the event for the gesture system to process
+        // clone after dispatch to pick up gesture prevention code
         var clone = this.cloneEvent(inEvent);
         clone.target = inEvent._target;
         this.fillGestureQueue(clone);
-        return t.dispatchEvent(inEvent);
       }
     },
     gestureTrigger: function() {
