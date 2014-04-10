@@ -6,26 +6,22 @@ module.exports = function(karma) {
 
     // list of files / patterns to load in the browser
     files: [
-      'PointerEvents/node_modules/chai/chai.js',
-      'PointerEvents/node_modules/chai-spies/chai-spies.js',
-      'PointerEvents/src/boot.js',
-      'PointerEvents/src/touch-action.js',
-      'PointerEvents/src/PointerEvent.js',
-      'PointerEvents/src/pointermap.js',
-      'PointerEvents/src/dispatcher.js',
-      'PointerEvents/src/installer.js',
-      'PointerEvents/src/mouse.js',
-      'PointerEvents/src/touch.js',
-      'PointerEvents/src/ms.js',
-      'PointerEvents/src/platform-events.js',
-      'PointerEvents/src/capture.js',
-      'PointerEvents/test/karma-setup.js',
-      'PointerEvents/test/setup.js',
-      'PointerEvents/test/loader.js',
-      'PointerEvents/test/constructor.js',
-      'PointerEvents/test/dispatcher.js',
-      'PointerEvents/test/pointermap.js',
-      'PointerEvents/test/capture.js'
+      'polymer-gestures/node_modules/chai/chai.js',
+      'polymer-gestures/src/scope.js',
+      'polymer-gestures/src/targetfind.js',
+      'polymer-gestures/src/touch-action.js',
+      'polymer-gestures/src/eventFactory.js',
+      'polymer-gestures/src/pointermap.js',
+      'polymer-gestures/src/dispatcher.js',
+      'polymer-gestures/src/installer.js',
+      'polymer-gestures/src/mouse.js',
+      'polymer-gestures/src/touch.js',
+      'polymer-gestures/src/ms.js',
+      'polymer-gestures/src/pointer.js',
+      'polymer-gestures/src/platform-events.js',
+      'polymer-gestures/src/track.js',
+      'polymer-gestures/src/tap.js',
+      'polymer-gestures/test/setup.js'
     ]
   }));
 };
