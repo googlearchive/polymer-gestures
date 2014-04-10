@@ -43,16 +43,19 @@
       pointermap['delete'](id);
     },
     MSPointerDown: function(inEvent) {
-      pointermap.set(inEvent.pointerId, inEvent);
+      pointermap.set(inEvent.pointerId, inEvent.target);
       var e = this.prepareEvent(inEvent);
       dispatcher.down(e);
     },
     MSPointerMove: function(inEvent) {
       var e = this.prepareEvent(inEvent);
+      e.target = pointermap.get(inEvent.pointerId);
       dispatcher.move(e);
     },
     MSPointerUp: function(inEvent) {
       var e = this.prepareEvent(inEvent);
+      e.target = pointermap.get(inEvent.pointerId);
+      e.relatedTarget = inEvent.target;
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
     },

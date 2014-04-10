@@ -153,7 +153,7 @@
          xDirection: t.xDirection,
          yDirection: t.yDirection,
          trackInfo: t.trackInfo,
-         relatedTarget: inEvent.target,
+         relatedTarget: inEvent.relatedTarget,
          pointerType: inEvent.pointerType
        });
        t.downTarget.dispatchEvent(e);

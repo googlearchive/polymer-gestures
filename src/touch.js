@@ -146,11 +146,11 @@
       return ret;
     },
     findTarget: function(touch, id) {
-      if (this.currentTouchEvent.type === 'touchmove') {
-        // reuse target we found in touchstart
-        return pointermap.get(id).target;
+      if (this.currentTouchEvent.type === 'touchstart') {
+        return scope.findTarget(touch);
       }
-      return scope.findTarget(touch);
+      // reuse target we found in touchstart
+      return pointermap.get(id);
     },
     touchToPointer: function(inTouch) {
       var cte = this.currentTouchEvent;
@@ -254,9 +254,7 @@
       }
     },
     down: function(inPointer) {
-      var p = pointermap.set(inPointer.pointerId, {
-        target: inPointer.target,
-      });
+      var p = pointermap.set(inPointer.pointerId, inPointer.target);
       dispatcher.down(inPointer);
     },
     touchmove: function(inEvent) {
@@ -284,6 +282,7 @@
     },
     up: function(inPointer) {
       if (!this.scrolling) {
+        inPointer.relatedTarget = scope.findTarget(inPointer);
         dispatcher.up(inPointer);
       }
       this.cleanUpPointer(inPointer);

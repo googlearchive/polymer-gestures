@@ -81,6 +81,8 @@
     mouseup: function(inEvent) {
       if (!this.isEventSimulatedFromTouch(inEvent)) {
         var e = this.prepareEvent(inEvent);
+        e.target = pointermap.get(this.POINTER_ID);
+        e.relatedTarget = inEvent.target;
         dispatcher.up(e);
         this.cleanupMouse();
       }

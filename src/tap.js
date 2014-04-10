@@ -65,7 +65,8 @@
     up: function(inEvent) {
       var start = pointermap.get(inEvent.pointerId);
       if (start && this.shouldTap(inEvent, start)) {
-        var t = scope.targetFinding.LCA(start.target, inEvent.target);
+        // up.relatedTarget is target currently under finger
+        var t = scope.targetFinding.LCA(start.target, inEvent.relatedTarget);
         if (t) {
           var e = eventFactory.makeGestureEvent('tap', {
             bubbles: true,
