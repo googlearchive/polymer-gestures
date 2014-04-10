@@ -64,7 +64,7 @@
         // TODO(dfreedman) workaround for some elements not sending mouseup
         // http://crbug/149091
         if (p) {
-          this.cancel(inEvent);
+          this.mouseup(inEvent);
         }
         var e = this.prepareEvent(inEvent);
         pointermap.set(this.POINTER_ID, inEvent.target);
