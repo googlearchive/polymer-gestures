@@ -75,7 +75,11 @@
             y: inEvent.clientY,
             detail: inEvent.detail,
             pointerType: inEvent.pointerType,
-            pointerId: inEvent.pointerId
+            pointerId: inEvent.pointerId,
+            altKey: inEvent.altKey,
+            ctrlKey: inEvent.ctrlKey,
+            metaKey: inEvent.metaKey,
+            shiftKey: inEvent.shiftKey
           });
           t.dispatchEvent(e);
         }
