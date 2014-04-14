@@ -43,6 +43,7 @@
     'which',
     'pageX',
     'pageY',
+    'timeStamp',
     // gesture addons
     'preventTap',
     'tapPrevented'
@@ -80,6 +81,7 @@
     '',
     null,
     null,
+    0,
     0,
     0,
     0,
