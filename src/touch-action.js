@@ -10,13 +10,13 @@
 
 (function() {
   function shadowSelector(v) {
-    return 'body /shadow-deep/ ' + selector(v);
+    return 'body /deep/ ' + selector(v);
   }
   function selector(v) {
     return '[touch-action="' + v + '"]';
   }
   function rule(v) {
-    return '{ -ms-touch-action: ' + v + '; touch-action: ' + v + '; touch-action-delay: none; }';
+    return '{ -ms-touch-action: ' + v + '; touch-action: ' + v + ';}';
   }
   var attrib2css = [
     'none',
@@ -34,11 +34,11 @@
   var styles = '';
   // only install stylesheet if the browser has touch action support
   var head = document.head;
-  var hasNativePE = window.PointerEvent || window.MSPointerEvent;
+  var hasTouchAction = typeof document.head.style.touchAction === 'string';
   // only add shadow selectors if shadowdom is supported
   var hasShadowRoot = !window.ShadowDOMPolyfill && document.head.createShadowRoot;
 
-  if (hasNativePE) {
+  if (hasTouchAction) {
     attrib2css.forEach(function(r) {
       if (String(r) === r) {
         styles += selector(r) + rule(r) + '\n';

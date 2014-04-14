@@ -17,13 +17,8 @@
   var CLICK_COUNT_TIMEOUT = 200;
   var ATTRIB = 'touch-action';
   var INSTALLER;
-  // The presence of touch event handlers blocks scrolling, and so we must be careful to
-  // avoid adding handlers unnecessarily.  Chrome plans to add a touch-action-delay property
-  // (crbug.com/329559) to address this, and once we have that we can opt-in to a simpler
-  // handler registration mechanism.  Rather than try to predict how exactly to opt-in to
-  // that we'll just leave this disabled until there is a build of Chrome to test.
-  var HAS_TOUCH_ACTION_DELAY = false;
-  
+  var HAS_TOUCH_ACTION = typeof document.head.style.touchAction === 'string';
+
   // handler block for native touch events
   var touchEvents = {
     events: [
@@ -33,14 +28,14 @@
       'touchcancel'
     ],
     register: function(target) {
-      if (HAS_TOUCH_ACTION_DELAY) {
+      if (HAS_TOUCH_ACTION) {
         dispatcher.listen(target, this.events);
       } else {
         INSTALLER.enableOnSubtree(target);
       }
     },
     unregister: function(target) {
-      if (HAS_TOUCH_ACTION_DELAY) {
+      if (HAS_TOUCH_ACTION) {
         dispatcher.unlisten(target, this.events);
       } else {
         // TODO(dfreedman): is it worth it to disconnect the MO?
@@ -258,13 +253,17 @@
       dispatcher.down(inPointer);
     },
     touchmove: function(inEvent) {
-      if (!this.scrolling) {
-        if (this.shouldScroll(inEvent)) {
-          this.scrolling = true;
-          this.touchcancel(inEvent);
-        } else {
-          inEvent.preventDefault();
-          this.processTouches(inEvent, this.move);
+      if (HAS_TOUCH_ACTION) {
+        this.processTouches(inEvent, this.move);
+      } else {
+        if (!this.scrolling) {
+          if (this.shouldScroll(inEvent)) {
+            this.scrolling = true;
+            this.touchcancel(inEvent);
+          } else {
+            inEvent.preventDefault();
+            this.processTouches(inEvent, this.move);
+          }
         }
       }
     },
@@ -314,7 +313,7 @@
     }
   };
 
-  if (!HAS_TOUCH_ACTION_DELAY) {
+  if (!HAS_TOUCH_ACTION) {
     INSTALLER = new scope.Installer(touchEvents.elementAdded, touchEvents.elementRemoved, touchEvents.elementChanged, touchEvents);
   }
 
