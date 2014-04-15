@@ -154,7 +154,8 @@
          yDirection: t.yDirection,
          trackInfo: t.trackInfo,
          relatedTarget: inEvent.relatedTarget,
-         pointerType: inEvent.pointerType
+         pointerType: inEvent.pointerType,
+         pointerId: inEvent.pointerId
        });
        t.downTarget.dispatchEvent(e);
      },
@@ -187,6 +188,7 @@
          } else {
            this.fireTrack('track', inEvent, p);
          }
+         p.lastMoveEvent = inEvent;
        }
      },
      up: function(inEvent) {
