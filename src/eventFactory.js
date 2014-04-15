@@ -80,9 +80,6 @@
         k = keys[i];
         e[k] = inDict[k];
       }
-      e.preventTap = function() {
-        e.tapPrevented = true;
-      };
       return e;
     },
     makePointerEvent: function(inType, inDict) {

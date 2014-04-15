@@ -90,7 +90,7 @@
   // patch eventFactory to remove id from tap's pointermap for preventTap calls
   eventFactory.preventTap = function(e) {
     return function() {
-      e.tapPrevented = true;
+      pointermap.delete(e.pointerId);
     };
   };
   dispatcher.registerGesture('tap', tap);
