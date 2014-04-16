@@ -128,9 +128,33 @@
         n = n.parentNode || n.host;
       }
       return d;
+    },
+    deepContains: function(a, b) {
+      var common = this.LCA(a, b);
+      // if a is the common ancestor, it must "deeply" contain b
+      return common === a;
+    },
+    insideNode: function(node, x, y) {
+      var rect = node.getBoundingClientRect();
+      return (rect.left <= x) && (x <= rect.right) && (rect.top <= y) && (y <= rect.bottom);
     }
   };
   scope.targetFinding = target;
+  /**
+   * Given an event, finds the "deepest" node that could have been the original target before ShadowDOM retargetting
+   *
+   * @param {Event} Event An event object with clientX and clientY properties
+   * @return {Element} The probable event origninator
+   */
   scope.findTarget = target.findTarget.bind(target);
+  /**
+   * Determines if the "container" node deeply contains the "containee" node, including situations where the "containee" is contained by one or more ShadowDOM
+   * roots.
+   *
+   * @param {Node} container
+   * @param {Node} containee
+   * @return {Boolean}
+   */
+  scope.deepContains = target.deepContains.bind(target);
 
 })(window.PolymerGestures);
