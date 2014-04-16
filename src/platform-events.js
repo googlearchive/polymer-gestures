@@ -16,7 +16,7 @@
   var dispatcher = scope.dispatcher;
 
   if (window.PointerEvent) {
-    dispatcher.registerSouce('pointer', scope.pointerEvents);
+    dispatcher.registerSource('pointer', scope.pointerEvents);
   } else if (window.navigator.msPointerEnabled) {
     dispatcher.registerSource('ms', scope.msEvents);
   } else {
