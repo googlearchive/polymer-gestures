@@ -42,7 +42,7 @@
     pointerup: function(inEvent) {
       var e = this.prepareEvent(inEvent);
       e.target = pointermap.get(inEvent.pointerId);
-      e.relatedTarget = inEvent.getTarget;
+      e.relatedTarget = inEvent.target;
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
     },
