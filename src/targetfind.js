@@ -157,4 +157,25 @@
    */
   scope.deepContains = target.deepContains.bind(target);
 
+  /**
+   * Determines if the x/y position is inside the given node.
+   *
+   * Example:
+   *
+   *     function upHandler(event) {
+   *       var innode = PolymerGestures.insideNode(event.target, event.clientX, event.clientY);
+   *       if (innode) {
+   *         // wait for tap?
+   *       } else {
+   *         // tap will never happen
+   *       }
+   *     }
+   *
+   * @param {Node} node
+   * @param {Number} x Screen X position
+   * @param {Number} y screen Y position
+   * @return {Boolean}
+   */
+  scope.insideNode = target.insideNode;
+
 })(window.PolymerGestures);
