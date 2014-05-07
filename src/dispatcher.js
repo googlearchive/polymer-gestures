@@ -163,6 +163,10 @@
     up: function(inEvent) {
       this.fireEvent('up', inEvent);
     },
+    cancel: function(inEvent) {
+      inEvent.tapPrevented = true;
+      this.fireEvent('up', inEvent);
+    },
     // LISTENER LOGIC
     eventHandler: function(inEvent) {
       // This is used to prevent multiple dispatch of events from
@@ -208,6 +212,7 @@
     makeEvent: function(inType, inEvent) {
       var e = eventFactory.makePointerEvent(inType, inEvent);
       e.preventDefault = inEvent.preventDefault;
+      e.tapPrevented = inEvent.tapPrevented;
       e._target = e._target || inEvent.target;
       return e;
     },

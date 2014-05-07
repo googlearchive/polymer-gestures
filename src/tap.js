@@ -60,7 +60,7 @@
         // only allow left click to tap for mouse
         return downState.buttons === 1;
       }
-      return true;
+      return !e.tapPrevented;
     },
     up: function(inEvent) {
       var start = pointermap.get(inEvent.pointerId);
@@ -90,6 +90,7 @@
   // patch eventFactory to remove id from tap's pointermap for preventTap calls
   eventFactory.preventTap = function(e) {
     return function() {
+      e.tapPrevented = true;
       pointermap.delete(e.pointerId);
     };
   };

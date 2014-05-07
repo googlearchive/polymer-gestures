@@ -286,8 +286,13 @@
       }
       this.cleanUpPointer(inPointer);
     },
+    cancel: function(inPointer) {
+      inPointer.relatedTarget = scope.findTarget(inPointer);
+      dispatcher.cancel(inPointer);
+      this.cleanUpPointer(inPointer);
+    },
     touchcancel: function(inEvent) {
-      this.processTouches(inEvent, this.up);
+      this.processTouches(inEvent, this.cancel);
     },
     cleanUpPointer: function(inPointer) {
       pointermap['delete'](inPointer.pointerId);

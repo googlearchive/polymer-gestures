@@ -60,7 +60,11 @@
       this.cleanup(inEvent.pointerId);
     },
     MSPointerCancel: function(inEvent) {
-      this.MSPointerUp(inEvent);
+      var e = this.prepareEvent(inEvent);
+      e.target = pointermap.get(inEvent.pointerId);
+      e.relatedTarget = inEvent.target;
+      dispatcher.cancel(e);
+      this.cleanup(inEvent.pointerId);
     }
   };
 

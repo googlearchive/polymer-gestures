@@ -47,7 +47,11 @@
       this.cleanup(inEvent.pointerId);
     },
     pointercancel: function(inEvent) {
-      this.pointerup(inEvent);
+      var e = this.prepareEvent(inEvent);
+      e.target = pointermap.get(inEvent.pointerId);
+      e.relatedTarget = inEvent.target;
+      dispatcher.cancel(e);
+      this.cleanup(inEvent.pointerId);
     }
   };
 
