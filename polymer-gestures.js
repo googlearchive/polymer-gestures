@@ -23,6 +23,7 @@
     'src/pointer.js',
     'src/platform-events.js',
     'src/track.js',
+    'src/hold.js',
     'src/tap.js'
   ];
 
