@@ -92,6 +92,15 @@
       if (a === b) {
         return a;
       }
+      if (a && !b) {
+        return a;
+      }
+      if (b && !a) {
+        return b;
+      }
+      if (!b && !a) {
+        return document;
+      }
       // fast case, a is a direct descendant of b or vice versa
       if (a.contains) {
         if (a.contains(b)) {
