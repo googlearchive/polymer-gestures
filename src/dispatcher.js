@@ -138,6 +138,10 @@
       this.gestures.push(source);
     },
     register: function(element) {
+      // NOTE: Work around for #4, don't add listeners to individual Polymer elmenets in SD Polyfill
+      if (window.ShadowDOMPolyfill && element !== document) {
+        return;
+      }
       var l = this.eventSourceList.length;
       for (var i = 0, es; (i < l) && (es = this.eventSourceList[i]); i++) {
         // call eventsource register
@@ -195,10 +199,20 @@
       }, this);
     },
     addEvent: function(target, eventName) {
-      target.addEventListener(eventName, this.boundHandler);
+      // NOTE: Work around for #4, use native event listener in SD Polyfill
+      if (window.ShadowDOMPolyfill) {
+        target.addEventListener_(eventName, this.boundHandler);
+      } else {
+        target.addEventListener(eventName, this.boundHandler);
+      }
     },
     removeEvent: function(target, eventName) {
-      target.removeEventListener(eventName, this.boundHandler);
+      // NOTE: Work around for #4, use native event listener in SD Polyfill
+      if (window.ShadowDOMPolyfill) {
+        target.removeEventListener_(eventName, this.boundHandler);
+      } else {
+        target.removeEventListener(eventName, this.boundHandler);
+      }
     },
     // EVENT CREATION AND TRACKING
     /**
@@ -255,11 +269,15 @@
     dispatchEvent: function(inEvent) {
       var t = inEvent._target;
       if (t) {
+        // NOTE: Work around for #4, get SD Polyfill wrapper for event target
+        if (window.ShadowDOMPolyfill) {
+          t = ShadowDOMPolyfill.wrapIfNeeded(t);
+        }
         t.dispatchEvent(inEvent);
         // clone the event for the gesture system to process
         // clone after dispatch to pick up gesture prevention code
         var clone = this.cloneEvent(inEvent);
-        clone.target = inEvent._target;
+        clone.target = t;
         this.fillGestureQueue(clone);
       }
     },
