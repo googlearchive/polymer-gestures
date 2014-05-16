@@ -91,6 +91,8 @@
 
   var HAS_SVG_INSTANCE = (typeof SVGElementInstance !== 'undefined');
 
+  var wrap = window.ShadowDOMPolyfill && ShadowDOMPolyfill.wrapIfNeeded || function(e){ return e; };
+
   var eventFactory = scope.eventFactory;
   /**
    * This module is for normalizing events. Mouse and Touch events will be
@@ -250,10 +252,11 @@
         // Work around SVGInstanceElement shadow tree
         // Return the <use> element that is represented by the instance for Safari, Chrome, IE.
         // This is the behavior implemented by Firefox.
-        if (HAS_SVG_INSTANCE && (p === 'target' || p === 'relatedTarget')) {
-          if (eventCopy[p] instanceof SVGElementInstance) {
+        if (p === 'target' || p === 'relatedTarget') {
+          if (HAS_SVG_INSTANCE && eventCopy[p] instanceof SVGElementInstance) {
             eventCopy[p] = eventCopy[p].correspondingUseElement;
           }
+          eventCopy[p] = wrap(eventCopy[p]);
         }
       }
       // keep the semantics of preventDefault
@@ -269,10 +272,6 @@
     dispatchEvent: function(inEvent) {
       var t = inEvent._target;
       if (t) {
-        // NOTE: Work around for #4, get SD Polyfill wrapper for event target
-        if (window.ShadowDOMPolyfill) {
-          t = ShadowDOMPolyfill.wrapIfNeeded(t);
-        }
         t.dispatchEvent(inEvent);
         // clone the event for the gesture system to process
         // clone after dispatch to pick up gesture prevention code

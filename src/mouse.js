@@ -67,7 +67,7 @@
           this.mouseup(inEvent);
         }
         var e = this.prepareEvent(inEvent);
-        pointermap.set(this.POINTER_ID, inEvent.target);
+        pointermap.set(this.POINTER_ID, e.target);
         dispatcher.down(e);
       }
     },
@@ -82,7 +82,7 @@
       if (!this.isEventSimulatedFromTouch(inEvent)) {
         var e = this.prepareEvent(inEvent);
         e.target = pointermap.get(this.POINTER_ID);
-        e.relatedTarget = inEvent.target;
+        e.relatedTarget = e.target;
         dispatcher.up(e);
         this.cleanupMouse();
       }
