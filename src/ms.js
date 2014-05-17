@@ -54,15 +54,15 @@
     },
     MSPointerUp: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.target = pointermap.get(e.pointerId);
       e.relatedTarget = e.target;
+      e.target = pointermap.get(e.pointerId);
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
     },
     MSPointerCancel: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.target = pointermap.get(e.pointerId);
       e.relatedTarget = e.target;
+      e.target = pointermap.get(e.pointerId);
       dispatcher.cancel(e);
       this.cleanup(inEvent.pointerId);
     }
