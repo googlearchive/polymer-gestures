@@ -102,13 +102,11 @@
         return document;
       }
       // fast case, a is a direct descendant of b or vice versa
-      if (a.contains) {
-        if (a.contains(b)) {
-          return a;
-        }
-        if (b.contains(a)) {
-          return b;
-        }
+      if (a.contains && a.contains(b)) {
+        return a;
+      }
+      if (b.contains && b.contains(a)) {
+        return b;
       }
       var adepth = this.depth(a);
       var bdepth = this.depth(b);
