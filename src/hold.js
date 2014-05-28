@@ -54,6 +54,7 @@
 (function(scope) {
   var dispatcher = scope.dispatcher;
   var eventFactory = scope.eventFactory;
+  var pointermap = new scope.PointerMap();
   var hold = {
     // wait at least HOLD_DELAY ms between hold and pulse events
     HOLD_DELAY: 200,
@@ -64,59 +65,63 @@
       'move',
       'up',
     ],
-    heldPointer: null,
-    holdJob: null,
-    pulse: function() {
-      var hold = Date.now() - this.heldPointer.timeStamp;
-      var type = this.held ? 'holdpulse' : 'hold';
-      this.fireHold(type, hold);
-      this.held = true;
+    pulse: function(pointerId) {
+      var p = pointermap.get(pointerId);
+      var hold = Date.now() - p.timeStamp;
+      var type = p.held ? 'holdpulse' : 'hold';
+      this.fireHold(type, pointerId, hold);
+      p.held = true;
     },
-    cancel: function() {
-      clearInterval(this.holdJob);
-      if (this.held) {
-        this.fireHold('release');
+    cancel: function(inEvent) {
+      var p = pointermap.get(inEvent.pointerId);
+
+      clearInterval(p.holdJob);
+      if (p.held) {
+        this.fireHold('release', inEvent.pointerId);
       }
-      this.held = false;
-      this.heldPointer = null;
-      this.target = null;
-      this.holdJob = null;
+      pointermap.delete(inEvent.pointerId);
     },
     down: function(inEvent) {
-      if (inEvent.isPrimary && !this.heldPointer) {
-        this.heldPointer = inEvent;
-        this.target = inEvent.target;
-        this.holdJob = setInterval(this.pulse.bind(this), this.HOLD_DELAY);
-      }
+      pointermap.set(inEvent.pointerId, {
+        target: inEvent.target,
+        buttons: inEvent.buttons,
+        x: inEvent.clientX,
+        y: inEvent.clientY,
+        holdJob: setInterval(this.pulse.bind(this, inEvent.pointerId), this.HOLD_DELAY)
+      });
     },
     up: function(inEvent) {
-      if (this.heldPointer && this.heldPointer.pointerId === inEvent.pointerId) {
-        this.cancel();
+      if (pointermap.has(inEvent.pointerId)) {
+        this.cancel(inEvent);
       }
     },
     move: function(inEvent) {
-      if (this.heldPointer && this.heldPointer.pointerId === inEvent.pointerId) {
-        var x = inEvent.clientX - this.heldPointer.clientX;
-        var y = inEvent.clientY - this.heldPointer.clientY;
+      var p = pointermap.get(inEvent.pointerId);
+
+      if (p) {
+        var x = inEvent.clientX - p.x;
+        var y = inEvent.clientY - p.y;
         if ((x * x + y * y) > this.WIGGLE_THRESHOLD) {
-          this.cancel();
+          this.cancel(inEvent);
         }
       }
     },
-    fireHold: function(inType, inHoldTime) {
+    fireHold: function(inType, pointerId, inHoldTime) {
+      var heldPointer = pointermap.get(pointerId);
+
       var p = {
         bubbles: true,
         cancelable: true,
-        pointerType: this.heldPointer.pointerType,
-        pointerId: this.heldPointer.pointerId,
-        x: this.heldPointer.clientX,
-        y: this.heldPointer.clientY
+        pointerType: heldPointer.pointerType,
+        pointerId: pointerId,
+        x: heldPointer.clientX,
+        y: heldPointer.clientY
       };
       if (inHoldTime) {
         p.holdTime = inHoldTime;
       }
       var e = eventFactory.makeGestureEvent(inType, p);
-      this.target.dispatchEvent(e);
+      heldPointer.target.dispatchEvent(e);
     }
   };
   dispatcher.registerGesture('hold', hold);
