@@ -8,6 +8,28 @@
  */
 
 (function(scope) {
+  var HAS_FULL_PATH = false;
+
+  // test for full event path support
+  var pathTest = document.createElement('meta');
+  document.head.appendChild(pathTest);
+  if (pathTest.createShadowRoot) {
+    var sr = pathTest.createShadowRoot();
+    var s = document.createElement('span');
+    sr.appendChild(s);
+    pathTest.addEventListener('testpath', function(ev) {
+      if (ev.path) {
+        // if the span is in the event path, then path[0] is the real source for all events
+        HAS_FULL_PATH = ev.path[0] === s;
+      }
+      ev.stopPropagation();
+    });
+    var ev = new CustomEvent('testpath', {bubbles: true});
+    s.dispatchEvent(ev);
+  }
+  pathTest.parentNode.removeChild(pathTest);
+  pathTest = null;
+
   var target = {
     shadow: function(inEl) {
       if (inEl) {
@@ -79,6 +101,9 @@
       return s;
     },
     findTarget: function(inEvent) {
+      if (HAS_FULL_PATH && inEvent.path) {
+        return inEvent.path[0];
+      }
       var x = inEvent.clientX, y = inEvent.clientY;
       // if the listener is in the shadow root, it is much faster to start there
       var s = this.owner(inEvent.target);

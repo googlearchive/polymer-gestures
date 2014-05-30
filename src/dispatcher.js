@@ -91,9 +91,11 @@
 
   var HAS_SVG_INSTANCE = (typeof SVGElementInstance !== 'undefined');
 
-  var wrap = window.ShadowDOMPolyfill && ShadowDOMPolyfill.wrapIfNeeded || function(e){ return e; };
-
   var eventFactory = scope.eventFactory;
+
+  var hasSDPolyfill = scope.hasSDPolyfill;
+  var wrap = scope.wrap;
+
   /**
    * This module is for normalizing events. Mouse and Touch events will be
    * collected here, and fire PointerEvents that have the same semantics, no
@@ -140,10 +142,6 @@
       this.gestures.push(source);
     },
     register: function(element) {
-      // NOTE: Work around for #4, don't add listeners to individual Polymer elmenets in SD Polyfill
-      if (window.ShadowDOMPolyfill && element !== document) {
-        return;
-      }
       var l = this.eventSourceList.length;
       for (var i = 0, es; (i < l) && (es = this.eventSourceList[i]); i++) {
         // call eventsource register
@@ -190,19 +188,19 @@
     },
     // set up event listeners
     listen: function(target, events) {
-      events.forEach(function(e) {
+      for (var i = 0, l = events.length, e; (i < l) && (e = events[i]); i++) {
         this.addEvent(target, e);
-      }, this);
+      }
     },
     // remove event listeners
     unlisten: function(target, events) {
-      events.forEach(function(e) {
+      for (var i = 0, l = events.length, e; (i < l) && (e = events[i]); i++) {
         this.removeEvent(target, e);
-      }, this);
+      }
     },
     addEvent: function(target, eventName) {
       // NOTE: Work around for #4, use native event listener in SD Polyfill
-      if (window.ShadowDOMPolyfill) {
+      if (hasSDPolyfill) {
         target.addEventListener_(eventName, this.boundHandler);
       } else {
         target.addEventListener(eventName, this.boundHandler);
@@ -210,7 +208,7 @@
     },
     removeEvent: function(target, eventName) {
       // NOTE: Work around for #4, use native event listener in SD Polyfill
-      if (window.ShadowDOMPolyfill) {
+      if (hasSDPolyfill) {
         target.removeEventListener_(eventName, this.boundHandler);
       } else {
         target.removeEventListener(eventName, this.boundHandler);
@@ -284,10 +282,11 @@
       // process the gesture queue
       for (var i = 0, e; i < this.gestureQueue.length; i++) {
         e = this.gestureQueue[i];
-        for (var j = 0, g; j < this.gestures.length; j++) {
+        for (var j = 0, g, fn; j < this.gestures.length; j++) {
           g = this.gestures[j];
-          if (g.events.indexOf(e.type) >= 0) {
-            g[e.type].call(g, e);
+          fn = g[e.type];
+          if (fn) {
+            fn.call(g, e);
           }
         }
       }
@@ -304,6 +303,9 @@
   dispatcher.boundHandler = dispatcher.eventHandler.bind(dispatcher);
   dispatcher.boundGestureTrigger = dispatcher.gestureTrigger.bind(dispatcher);
   scope.dispatcher = dispatcher;
-  scope.register = dispatcher.register.bind(dispatcher);
+  scope.register = function(root) {
+    dispatcher.register(root);
+  };
   scope.unregister = dispatcher.unregister.bind(dispatcher);
+  scope.wrap = wrap;
 })(window.PolymerGestures);

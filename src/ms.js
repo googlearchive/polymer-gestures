@@ -19,6 +19,9 @@
       'MSPointerCancel',
     ],
     register: function(target) {
+      if (target !== document) {
+        return;
+      }
       dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
@@ -44,6 +47,7 @@
     },
     MSPointerDown: function(inEvent) {
       var e = this.prepareEvent(inEvent);
+      e.target = scope.findTarget(inEvent);
       pointermap.set(inEvent.pointerId, e.target);
       dispatcher.down(e);
     },
@@ -61,7 +65,7 @@
     },
     MSPointerCancel: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.relatedTarget = e.target;
+      e.relatedTarget = scope.findTarget(inEvent);
       e.target = pointermap.get(e.pointerId);
       dispatcher.cancel(e);
       this.cleanup(inEvent.pointerId);

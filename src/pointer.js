@@ -21,6 +21,9 @@
       return dispatcher.cloneEvent(inEvent);
     },
     register: function(target) {
+      if (target !== document) {
+        return;
+      }
       dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
@@ -31,6 +34,7 @@
     },
     pointerdown: function(inEvent) {
       var e = this.prepareEvent(inEvent);
+      e.target = scope.findTarget(inEvent);
       pointermap.set(e.pointerId, e.target);
       dispatcher.down(e);
     },
@@ -41,14 +45,14 @@
     },
     pointerup: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.relatedTarget = e.target;
+      e.relatedTarget = scope.findTarget(e.target);
       e.target = pointermap.get(e.pointerId);
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
     },
     pointercancel: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.relatedTarget = e.target;
+      e.relatedTarget = scope.findTarget(inEvent);
       e.target = pointermap.get(e.pointerId);
       dispatcher.cancel(e);
       this.cleanup(inEvent.pointerId);

@@ -17,7 +17,8 @@
   var CLICK_COUNT_TIMEOUT = 200;
   var ATTRIB = 'touch-action';
   var INSTALLER;
-  var HAS_TOUCH_ACTION = typeof document.head.style.touchAction === 'string';
+  // maybe one day...
+  var CAN_USE_GLOBAL = ATTRIB in document.head.style;
 
   // handler block for native touch events
   var touchEvents = {
@@ -28,14 +29,14 @@
       'touchcancel'
     ],
     register: function(target) {
-      if (HAS_TOUCH_ACTION) {
+      if (CAN_USE_GLOBAL) {
         dispatcher.listen(target, this.events);
       } else {
         INSTALLER.enableOnSubtree(target);
       }
     },
     unregister: function(target) {
-      if (HAS_TOUCH_ACTION) {
+      if (CAN_USE_GLOBAL) {
         dispatcher.unlisten(target, this.events);
       } else {
         // TODO(dfreedman): is it worth it to disconnect the MO?
@@ -142,7 +143,11 @@
     },
     findTarget: function(touch, id) {
       if (this.currentTouchEvent.type === 'touchstart') {
-        return scope.findTarget(touch);
+        if (this.isPrimaryTouch(touch)) {
+          return scope.findTarget(this.currentTouchEvent);
+        } else {
+          return scope.findTarget(touch);
+        }
       }
       // reuse target we found in touchstart
       return pointermap.get(id);
@@ -154,7 +159,7 @@
       // Touch identifiers can start at 0.
       // Add 2 to the touch identifier for compatibility.
       var id = e.pointerId = inTouch.identifier + 2;
-      e.target = this.findTarget(inTouch, id);
+      e.target = scope.wrap(this.findTarget(inTouch, id));
       e.bubbles = true;
       e.cancelable = true;
       e.detail = this.clickCount;
@@ -236,7 +241,7 @@
             d.push(p);
           }
         }, this);
-        d.forEach(this.cancelOut, this);
+        d.forEach(this.cancel, this);
       }
     },
     touchstart: function(inEvent) {
@@ -253,7 +258,7 @@
       dispatcher.down(inPointer);
     },
     touchmove: function(inEvent) {
-      if (HAS_TOUCH_ACTION) {
+      if (CAN_USE_GLOBAL) {
         this.processTouches(inEvent, this.move);
       } else {
         if (!this.scrolling) {
@@ -281,13 +286,13 @@
     },
     up: function(inPointer) {
       if (!this.scrolling) {
-        inPointer.relatedTarget = scope.findTarget(inPointer);
+        inPointer.relatedTarget = scope.wrap(scope.findTarget(inPointer));
         dispatcher.up(inPointer);
       }
       this.cleanUpPointer(inPointer);
     },
     cancel: function(inPointer) {
-      inPointer.relatedTarget = scope.findTarget(inPointer);
+      inPointer.relatedTarget = scope.wrap(scope.findTarget(inPointer));
       dispatcher.cancel(inPointer);
       this.cleanUpPointer(inPointer);
     },
@@ -318,7 +323,7 @@
     }
   };
 
-  if (!HAS_TOUCH_ACTION) {
+  if (!CAN_USE_GLOBAL) {
     INSTALLER = new scope.Installer(touchEvents.elementAdded, touchEvents.elementRemoved, touchEvents.elementChanged, touchEvents);
   }
 
