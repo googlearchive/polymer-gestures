@@ -26,6 +26,7 @@
     });
     var ev = new CustomEvent('testpath', {bubbles: true});
     s.dispatchEvent(ev);
+    sr = s = null;
   }
   pathTest.parentNode.removeChild(pathTest);
   pathTest = null;
