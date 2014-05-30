@@ -144,7 +144,12 @@
     findTarget: function(touch, id) {
       if (this.currentTouchEvent.type === 'touchstart') {
         if (this.isPrimaryTouch(touch)) {
-          return scope.findTarget(this.currentTouchEvent);
+          var fastPath = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            path: this.currentTouchEvent.path
+          };
+          return scope.findTarget(fastPath);
         } else {
           return scope.findTarget(touch);
         }
