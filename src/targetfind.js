@@ -65,25 +65,18 @@
       return shadows;
     },
     searchRoot: function(inRoot, x, y) {
+      var t, st, sr, os;
       if (inRoot) {
-        var t = inRoot.elementFromPoint(x, y);
-        var st, sr, os;
-        // is element a shadow host?
-        sr = this.targetingShadow(t);
-        while (sr) {
-          // find the the element inside the shadow root
-          st = sr.elementFromPoint(x, y);
-          if (!st) {
-            // check for older shadows
-            sr = this.olderShadow(sr);
-          } else {
-            // shadowed element may contain a shadow root
-            var ssr = this.targetingShadow(st);
-            return this.searchRoot(ssr, x, y) || st;
-          }
+        t = inRoot.elementFromPoint(x, y);
+        if (t) {
+          // found element, check if it has a ShadowRoot
+          sr = this.targetingShadow(t);
+        } else if (inRoot !== document) {
+          // check for sibling roots
+          sr = this.olderShadow(inRoot);
         }
-        // light dom element is the target
-        return t;
+        // search other roots, fall back to light dom element
+        return this.searchRoot(sr, x, y) || t;
       }
     },
     owner: function(element) {
