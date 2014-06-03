@@ -147,7 +147,8 @@
           var fastPath = {
             clientX: touch.clientX,
             clientY: touch.clientY,
-            path: this.currentTouchEvent.path
+            path: this.currentTouchEvent.path,
+            target: this.currentTouchEvent.target
           };
           return scope.findTarget(fastPath);
         } else {

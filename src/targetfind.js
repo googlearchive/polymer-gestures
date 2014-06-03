@@ -12,7 +12,6 @@
 
   // test for full event path support
   var pathTest = document.createElement('meta');
-  document.head.appendChild(pathTest);
   if (pathTest.createShadowRoot) {
     var sr = pathTest.createShadowRoot();
     var s = document.createElement('span');
@@ -25,10 +24,12 @@
       ev.stopPropagation();
     });
     var ev = new CustomEvent('testpath', {bubbles: true});
+    // must add node to DOM to trigger event listener
+    document.head.appendChild(pathTest);
     s.dispatchEvent(ev);
+    pathTest.parentNode.removeChild(pathTest);
     sr = s = null;
   }
-  pathTest.parentNode.removeChild(pathTest);
   pathTest = null;
 
   var target = {
@@ -130,14 +131,14 @@
       var adepth = this.depth(a);
       var bdepth = this.depth(b);
       var d = adepth - bdepth;
-      if (d > 0) {
+      if (d >= 0) {
         a = this.walk(a, d);
       } else {
         b = this.walk(b, -d);
       }
-      while(a && b && a !== b) {
-        a = this.walk(a, 1);
-        b = this.walk(b, 1);
+      while (a && b && a !== b) {
+        a = a.parentNode || a.host;
+        b = b.parentNode || b.host;
       }
       return a;
     },
