@@ -197,7 +197,7 @@
     shouldScroll: function(inEvent) {
       if (this.firstXY) {
         var ret;
-        var scrollAxis = inEvent.currentTarget._scrollType;
+        var scrollAxis = scope.wrap(inEvent.currentTarget)._scrollType;
         if (scrollAxis === 'none') {
           // this element is a touch-action: none, should never scroll
           ret = false;
