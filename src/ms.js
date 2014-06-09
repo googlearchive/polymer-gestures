@@ -58,7 +58,7 @@
     },
     MSPointerUp: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.relatedTarget = scope.wrap(scope.findTarget(e.target));
+      e.relatedTarget = scope.wrap(scope.findTarget(inEvent));
       e.target = pointermap.get(e.pointerId);
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
