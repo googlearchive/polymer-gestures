@@ -148,7 +148,7 @@
             clientX: touch.clientX,
             clientY: touch.clientY,
             path: this.currentTouchEvent.path,
-            target: this.currentTouchEvent.target
+            target: scope.wrap(this.currentTouchEvent.target)
           };
           return scope.findTarget(fastPath);
         } else {
@@ -243,7 +243,7 @@
           // Touch identifiers are 2 smaller than their pointerId, which is the
           // index in pointermap.
           if (key !== 1 && !this.findTouch(tl, key - 2)) {
-            var p = value.out;
+            var p = value;
             d.push(p);
           }
         }, this);
@@ -298,7 +298,6 @@
       this.cleanUpPointer(inPointer);
     },
     cancel: function(inPointer) {
-      inPointer.relatedTarget = scope.wrap(scope.findTarget(inPointer));
       dispatcher.cancel(inPointer);
       this.cleanUpPointer(inPointer);
     },
