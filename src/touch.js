@@ -18,7 +18,8 @@
   var ATTRIB = 'touch-action';
   var INSTALLER;
   // maybe one day...
-  var CAN_USE_GLOBAL = ATTRIB in document.head.style;
+  // var CAN_USE_GLOBAL = ATTRIB in document.head.style;
+  var CAN_USE_GLOBAL = false;
 
   // handler block for native touch events
   var touchEvents = {
