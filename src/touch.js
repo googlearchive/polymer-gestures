@@ -176,6 +176,7 @@
       e.pressure = inTouch.webkitForce || inTouch.force || 0.5;
       e.isPrimary = this.isPrimaryTouch(inTouch);
       e.pointerType = this.POINTER_TYPE;
+      e._source = 'touch';
       // forward touch preventDefaults
       var self = this;
       e.preventDefault = function() {

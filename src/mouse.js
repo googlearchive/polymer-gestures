@@ -56,6 +56,7 @@
       e.pointerId = this.POINTER_ID;
       e.isPrimary = true;
       e.pointerType = this.POINTER_TYPE;
+      e._source = 'mouse';
       if (!HAS_BUTTONS) {
         e.buttons = WHICH_TO_BUTTONS[e.which] || 0;
       }

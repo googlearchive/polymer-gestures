@@ -79,7 +79,8 @@
             altKey: inEvent.altKey,
             ctrlKey: inEvent.ctrlKey,
             metaKey: inEvent.metaKey,
-            shiftKey: inEvent.shiftKey
+            shiftKey: inEvent.shiftKey,
+            _source: 'tap'
           });
           t.dispatchEvent(e);
         }

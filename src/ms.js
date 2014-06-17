@@ -36,10 +36,11 @@
     ],
     prepareEvent: function(inEvent) {
       var e = inEvent;
+      e = dispatcher.cloneEvent(inEvent);
       if (HAS_BITMAP_TYPE) {
-        e = dispatcher.cloneEvent(inEvent);
         e.pointerType = this.POINTER_TYPES[inEvent.pointerType];
       }
+      e._source = 'ms';
       return e;
     },
     cleanup: function(id) {

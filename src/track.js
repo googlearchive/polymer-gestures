@@ -155,7 +155,8 @@
          trackInfo: t.trackInfo,
          relatedTarget: inEvent.relatedTarget,
          pointerType: inEvent.pointerType,
-         pointerId: inEvent.pointerId
+         pointerId: inEvent.pointerId,
+         _source: 'track'
        });
        t.downTarget.dispatchEvent(e);
      },

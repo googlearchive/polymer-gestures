@@ -116,6 +116,7 @@
       e.pointerType = inDict.pointerType || '';
       e.hwTimestamp = inDict.hwTimestamp || 0;
       e.isPrimary = inDict.isPrimary || false;
+      e._source = inDict._source || '';
       return e;
     }
   };

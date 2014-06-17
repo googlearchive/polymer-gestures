@@ -18,7 +18,9 @@
       'pointercancel'
     ],
     prepareEvent: function(inEvent) {
-      return dispatcher.cloneEvent(inEvent);
+      var e = dispatcher.cloneEvent(inEvent);
+      e._source = 'pointer';
+      return e;
     },
     register: function(target) {
       if (target !== document) {

@@ -46,7 +46,8 @@
     'timeStamp',
     // gesture addons
     'preventTap',
-    'tapPrevented'
+    'tapPrevented',
+    '_source'
   ];
 
   var CLONE_DEFAULTS = [

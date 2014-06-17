@@ -110,7 +110,8 @@
         pointerType: this.heldPointer.pointerType,
         pointerId: this.heldPointer.pointerId,
         x: this.heldPointer.clientX,
-        y: this.heldPointer.clientY
+        y: this.heldPointer.clientY,
+        _source: 'hold'
       };
       if (inHoldTime) {
         p.holdTime = inHoldTime;
