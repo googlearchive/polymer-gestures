@@ -48,7 +48,7 @@
 /**
  * This event is fired when a held pointer is released or moved.
  *
- * @class released
+ * @class release
  */
 
 (function(scope) {
