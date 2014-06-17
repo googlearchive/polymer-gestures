@@ -85,7 +85,7 @@
       EMITTER: 'none',
       XSCROLLER: 'pan-x',
       YSCROLLER: 'pan-y',
-      SCROLLER: /^(?:pan-x pan-y)|(?:pan-y pan-x)|auto$/
+      SCROLLER: /^(?:pan-x pan-y)|(?:pan-y pan-x)|auto|manipulation$/
     },
     touchActionToScrollType: function(touchAction) {
       var t = touchAction;

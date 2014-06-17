@@ -29,7 +29,8 @@
         'pan-x pan-y',
         'pan-y pan-x'
       ]
-    }
+    },
+    'manipulation'
   ];
   var styles = '';
   // only install stylesheet if the browser has touch action support
