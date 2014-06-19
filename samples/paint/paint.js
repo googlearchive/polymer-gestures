@@ -44,7 +44,6 @@ Paint.prototype.initEvents = function() {
 };
 
 Paint.prototype.onDown = function(event) {
-  console.log(event);
   var width = event.pointerType === 'touch' ? (event.width || 10) : 4;
   this.pointers[event.pointerId] = new Pointer({x: event.clientX, y: event.clientY, width: width});
 };
