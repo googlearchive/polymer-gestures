@@ -15,6 +15,7 @@
   // This should be long enough to ignore compat mouse events made by touch
   var DEDUP_TIMEOUT = 2500;
   var CLICK_COUNT_TIMEOUT = 200;
+  var HYSTERESIS = 20;
   var ATTRIB = 'touch-action';
   var INSTALLER;
   // maybe one day...
@@ -189,9 +190,18 @@
     processTouches: function(inEvent, inFunction) {
       var tl = inEvent.changedTouches;
       this.currentTouchEvent = inEvent;
-      for (var i = 0, t; i < tl.length; i++) {
+      for (var i = 0, t, p; i < tl.length; i++) {
         t = tl[i];
-        inFunction.call(this, this.touchToPointer(t));
+        p = this.touchToPointer(t);
+        if (inEvent.type === 'touchstart') {
+          pointermap.set(p.pointerId, p.target);
+        }
+        if (pointermap.has(p.pointerId)) {
+          inFunction.call(this, p);
+        }
+        if (inEvent.type === 'touchend') {
+          this.cleanUpPointer(p);
+        }
       }
     },
     // For single axis scrollers, determines whether the element should emit
@@ -217,7 +227,6 @@
           // making events
           ret = da >= doa;
         }
-        this.firstXY = null;
         return ret;
       }
     },
@@ -262,7 +271,6 @@
       }
     },
     down: function(inPointer) {
-      var p = pointermap.set(inPointer.pointerId, inPointer.target);
       dispatcher.down(inPointer);
     },
     touchmove: function(inEvent) {
@@ -272,20 +280,23 @@
         if (!this.scrolling) {
           if (this.shouldScroll(inEvent)) {
             this.scrolling = true;
-            this.touchcancel(inEvent);
           } else {
             inEvent.preventDefault();
             this.processTouches(inEvent, this.move);
+          }
+        } else if (this.firstXY) {
+          var t = inEvent.changedTouches[0];
+          var dx = t.clientX - this.firstXY.X;
+          var dy = t.clientY - this.firstXY.Y;
+          var dd = Math.sqrt(dx * dx + dy * dy);
+          if (dd >= HYSTERESIS) {
+            this.touchcancel(inEvent);
+            this.firstXY = null;
           }
         }
       }
     },
     move: function(inPointer) {
-      var pointer = pointermap.get(inPointer.pointerId);
-      // a finger drifted off the screen, ignore it
-      if (!pointer) {
-        return;
-      }
       dispatcher.move(inPointer);
     },
     touchend: function(inEvent) {
@@ -293,15 +304,11 @@
       this.processTouches(inEvent, this.up);
     },
     up: function(inPointer) {
-      if (!this.scrolling) {
-        inPointer.relatedTarget = scope.wrap(scope.findTarget(inPointer));
-        dispatcher.up(inPointer);
-      }
-      this.cleanUpPointer(inPointer);
+      inPointer.relatedTarget = scope.wrap(scope.findTarget(inPointer));
+      dispatcher.up(inPointer);
     },
     cancel: function(inPointer) {
       dispatcher.cancel(inPointer);
-      this.cleanUpPointer(inPointer);
     },
     touchcancel: function(inEvent) {
       this.processTouches(inEvent, this.cancel);
