@@ -281,6 +281,7 @@
           if (this.shouldScroll(inEvent)) {
             this.scrolling = true;
           } else {
+            this.firstXY = null;
             inEvent.preventDefault();
             this.processTouches(inEvent, this.move);
           }
