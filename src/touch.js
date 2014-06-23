@@ -111,7 +111,7 @@
       if (pointermap.pointers() === 0 || (pointermap.pointers() === 1 && pointermap.has(1))) {
         this.firstTouch = inTouch.identifier;
         this.firstXY = {X: inTouch.clientX, Y: inTouch.clientY};
-        this.scrolling = false;
+        this.scrolling = null;
         this.cancelResetClickCount();
       }
     },
@@ -199,7 +199,7 @@
         if (pointermap.has(p.pointerId)) {
           inFunction.call(this, p);
         }
-        if (inEvent.type === 'touchend') {
+        if (inEvent.type === 'touchend' || inEvent._cancel) {
           this.cleanUpPointer(p);
         }
       }
@@ -209,7 +209,7 @@
     shouldScroll: function(inEvent) {
       if (this.firstXY) {
         var ret;
-        var scrollAxis = scope.wrap(inEvent.currentTarget)._scrollType;
+        var scrollAxis = scope.targetFinding.findScrollAxis(inEvent);
         if (scrollAxis === 'none') {
           // this element is a touch-action: none, should never scroll
           ret = false;
@@ -258,7 +258,10 @@
             d.push(p);
           }
         }, this);
-        d.forEach(this.cancel, this);
+        d.forEach(function(p) {
+          this.cancel(p);
+          pointermap.delete(p.pointerId);
+        });
       }
     },
     touchstart: function(inEvent) {
@@ -278,10 +281,10 @@
         this.processTouches(inEvent, this.move);
       } else {
         if (!this.scrolling) {
-          if (this.shouldScroll(inEvent)) {
+          if (this.scrolling === null && this.shouldScroll(inEvent)) {
             this.scrolling = true;
           } else {
-            this.firstXY = null;
+            this.scrolling = false;
             inEvent.preventDefault();
             this.processTouches(inEvent, this.move);
           }
@@ -292,6 +295,7 @@
           var dd = Math.sqrt(dx * dx + dy * dy);
           if (dd >= HYSTERESIS) {
             this.touchcancel(inEvent);
+            this.scrolling = true;
             this.firstXY = null;
           }
         }
@@ -312,6 +316,7 @@
       dispatcher.cancel(inPointer);
     },
     touchcancel: function(inEvent) {
+      inEvent._cancel = true;
       this.processTouches(inEvent, this.cancel);
     },
     cleanUpPointer: function(inPointer) {

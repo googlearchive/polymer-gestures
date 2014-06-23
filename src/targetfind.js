@@ -12,7 +12,7 @@
 
   // test for full event path support
   var pathTest = document.createElement('meta');
-  if (pathTest.createShadowRoot) {
+  if (!scope.hasSDPolyfill && pathTest.createShadowRoot) {
     var sr = pathTest.createShadowRoot();
     var s = document.createElement('span');
     sr.appendChild(s);
@@ -107,6 +107,26 @@
         s = document;
       }
       return this.searchRoot(s, x, y);
+    },
+    findScrollAxis: function(inEvent) {
+      var n;
+      if (HAS_FULL_PATH && inEvent.path) {
+        var path = inEvent.path;
+        for (var i = 0; i < path.length; i++) {
+          n = path[i];
+          if (n._scrollType) {
+            return n._scrollType;
+          }
+        }
+      } else {
+        n = scope.wrap(inEvent.currentTarget);
+        while(n) {
+          if (n._scrollType) {
+            return n._scrollType;
+          }
+          n = n.parentNode || n.host;
+        }
+      }
     },
     LCA: function(a, b) {
       if (a === b) {
