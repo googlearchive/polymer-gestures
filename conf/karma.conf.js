@@ -13,7 +13,6 @@ module.exports = function(karma) {
       'polymer-gestures/src/eventFactory.js',
       'polymer-gestures/src/pointermap.js',
       'polymer-gestures/src/dispatcher.js',
-      'polymer-gestures/src/installer.js',
       'polymer-gestures/src/mouse.js',
       'polymer-gestures/src/touch.js',
       'polymer-gestures/src/ms.js',

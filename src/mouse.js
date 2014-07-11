@@ -29,10 +29,12 @@
       'mousemove',
       'mouseup'
     ],
+    exposes: [
+      'down',
+      'up',
+      'move'
+    ],
     register: function(target) {
-      if (target !== document) {
-        return;
-      }
       dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
@@ -71,7 +73,7 @@
           this.mouseup(inEvent);
         }
         var e = this.prepareEvent(inEvent);
-        e.target = scope.wrap(scope.findTarget(inEvent));
+        e.target = scope.findTarget(inEvent);
         pointermap.set(this.POINTER_ID, e.target);
         dispatcher.down(e);
       }
@@ -95,7 +97,7 @@
     mouseup: function(inEvent) {
       if (!this.isEventSimulatedFromTouch(inEvent)) {
         var e = this.prepareEvent(inEvent);
-        e.relatedTarget = scope.wrap(scope.findTarget(inEvent));
+        e.relatedTarget = scope.findTarget(inEvent);
         e.target = pointermap.get(this.POINTER_ID);
         dispatcher.up(e);
         this.cleanupMouse();

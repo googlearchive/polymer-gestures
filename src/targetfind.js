@@ -12,7 +12,7 @@
 
   // test for full event path support
   var pathTest = document.createElement('meta');
-  if (!scope.hasSDPolyfill && pathTest.createShadowRoot) {
+  if (pathTest.createShadowRoot) {
     var sr = pathTest.createShadowRoot();
     var s = document.createElement('span');
     sr.appendChild(s);
@@ -108,21 +108,21 @@
       }
       return this.searchRoot(s, x, y);
     },
-    findScrollAxis: function(inEvent) {
-      var n;
+    findTouchAction: function(inEvent) {
+      var n, ct = inEvent.currentTarget;
       if (HAS_FULL_PATH && inEvent.path) {
         var path = inEvent.path;
-        for (var i = 0; i < path.length; i++) {
+        for (var i = path.indexOf(ct); i >= 0 && i < path.length; i++) {
           n = path[i];
-          if (n._scrollType) {
-            return n._scrollType;
+          if (n.hasAttribute('touch-action')) {
+            return n.getAttribute('touch-action');
           }
         }
       } else {
-        n = scope.wrap(inEvent.currentTarget);
+        n = inEvent.currentTarget;
         while(n) {
-          if (n._scrollType) {
-            return n._scrollType;
+          if (n.hasAttribute('touch-action')) {
+            return n.getAttribute('touch-action');
           }
           n = n.parentNode || n.host;
         }

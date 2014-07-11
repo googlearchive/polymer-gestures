@@ -10,7 +10,7 @@
 
 (function() {
   function shadowSelector(v) {
-    return 'body /deep/ ' + selector(v);
+    return 'head /deep/ ' + selector(v);
   }
   function selector(v) {
     return '[touch-action="' + v + '"]';
@@ -34,7 +34,6 @@
   ];
   var styles = '';
   // only install stylesheet if the browser has touch action support
-  var head = document.head;
   var hasTouchAction = typeof document.head.style.touchAction === 'string';
   // only add shadow selectors if shadowdom is supported
   var hasShadowRoot = !window.ShadowDOMPolyfill && document.head.createShadowRoot;
