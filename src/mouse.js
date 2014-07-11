@@ -78,9 +78,18 @@
     },
     mousemove: function(inEvent) {
       if (!this.isEventSimulatedFromTouch(inEvent)) {
-        var e = this.prepareEvent(inEvent);
-        e.target = pointermap.get(this.POINTER_ID);
-        dispatcher.move(e);
+        var target = pointermap.get(this.POINTER_ID);
+        if (target) {
+          var e = this.prepareEvent(inEvent);
+          e.target = target;
+          // handle case where we missed a mouseup
+          if (e.buttons === 0) {
+            dispatcher.cancel(e);
+            this.cleanupMouse();
+          } else {
+            dispatcher.move(e);
+          }
+        }
       }
     },
     mouseup: function(inEvent) {
