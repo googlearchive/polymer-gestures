@@ -259,7 +259,9 @@
         }
       }
       // keep the semantics of preventDefault
-      eventCopy.preventDefault = inEvent.preventDefault;
+      eventCopy.preventDefault = function() {
+        inEvent.preventDefault();
+      };
       return eventCopy;
     },
     /**

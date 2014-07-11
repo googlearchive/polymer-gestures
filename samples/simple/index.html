@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width user-scalable=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
     <title>polymer-gestures testing ground</title>
     <style>
       * {
@@ -70,7 +70,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div id="enterleave">
       </div>
     </div>
-    <div id="wrapper"><div id="output"></div></div>
+    <div id="wrapper">
+      <div id="output"></div>
+    </div>
     <script>
       var events = [
         // base events
@@ -97,13 +99,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       events.forEach(function(en) {
         capture.addEventListener(en, function(inEvent) {
           appendOutput(inEvent.type + ' [' + inEvent.pointerId + ']');
+          inEvent.preventDefault();
         });
-      });
-      enterleave.addEventListener('pointerenter', function(e) {
-        appendOutput('enterleave entered');
-      });
-      enterleave.addEventListener('pointerleave', function(e) {
-        appendOutput('enterleave left');
       });
     </script>
   </body>
