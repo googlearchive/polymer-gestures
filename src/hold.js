@@ -64,6 +64,11 @@
       'move',
       'up',
     ],
+    exposes: [
+      'hold',
+      'holdpulse',
+      'release'
+    ],
     heldPointer: null,
     holdJob: null,
     pulse: function() {

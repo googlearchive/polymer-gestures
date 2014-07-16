@@ -48,7 +48,7 @@
     },
     MSPointerDown: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.target = scope.wrap(scope.findTarget(inEvent));
+      e.target = scope.findTarget(inEvent);
       pointermap.set(inEvent.pointerId, e.target);
       dispatcher.down(e);
     },
@@ -59,14 +59,14 @@
     },
     MSPointerUp: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.relatedTarget = scope.wrap(scope.findTarget(inEvent));
+      e.relatedTarget = scope.findTarget(inEvent);
       e.target = pointermap.get(e.pointerId);
       dispatcher.up(e);
       this.cleanup(inEvent.pointerId);
     },
     MSPointerCancel: function(inEvent) {
       var e = this.prepareEvent(inEvent);
-      e.relatedTarget = scope.wrap(scope.findTarget(inEvent));
+      e.relatedTarget = scope.findTarget(inEvent);
       e.target = pointermap.get(e.pointerId);
       dispatcher.cancel(e);
       this.cleanup(inEvent.pointerId);

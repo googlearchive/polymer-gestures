@@ -16,7 +16,6 @@
     'src/eventFactory.js',
     'src/pointermap.js',
     'src/dispatcher.js',
-    'src/installer.js',
     'src/mouse.js',
     'src/touch.js',
     'src/ms.js',

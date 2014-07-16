@@ -45,6 +45,9 @@
       'down',
       'up'
     ],
+    exposes: [
+      'tap'
+    ],
     down: function(inEvent) {
       if (inEvent.isPrimary && !inEvent.tapPrevented) {
         pointermap.set(inEvent.pointerId, {
