@@ -94,9 +94,6 @@
 
   var eventFactory = scope.eventFactory;
 
-  var hasSDPolyfill = scope.hasSDPolyfill;
-  var wrap = scope.wrap;
-
   /**
    * This module is for normalizing events. Mouse and Touch events will be
    * collected here, and fire PointerEvents that have the same semantics, no
@@ -117,6 +114,8 @@
     eventSources: Object.create(null),
     eventSourceList: [],
     gestures: [],
+    // map gesture event -> {listeners: int, index: gestures[int]}
+    dependencyMap: Object.create(null),
     gestureQueue: [],
     /**
      * Add a new event source that will generate pointer events.
@@ -140,6 +139,13 @@
       }
     },
     registerGesture: function(name, source) {
+      var obj = Object.create(null);
+      obj.listeners = 0;
+      obj.index = this.gestures.length;
+      for (var i = 0, g; i < source.exposes.length; i++) {
+        g = source.exposes[i];
+        this.dependencyMap[g] = obj;
+      }
       this.gestures.push(source);
     },
     register: function(element) {
@@ -177,6 +183,9 @@
       // This is used to prevent multiple dispatch of events from
       // platform events. This can happen when two elements in different scopes
       // are set up to create pointer events, which is relevant to Shadow DOM.
+
+      // TODO(dfreedm): make this check more granular, allow for minimal event generation
+      // e.g inEvent._handledByPG['tap'] and inEvent._handledByPG['track'], etc
       if (inEvent._handledByPG) {
         return;
       }
@@ -200,20 +209,10 @@
       }
     },
     addEvent: function(target, eventName) {
-      // NOTE: Work around for #4, use native event listener in SD Polyfill
-      if (hasSDPolyfill) {
-        target.addEventListener_(eventName, this.boundHandler);
-      } else {
-        target.addEventListener(eventName, this.boundHandler);
-      }
+      target.addEventListener(eventName, this.boundHandler);
     },
     removeEvent: function(target, eventName) {
-      // NOTE: Work around for #4, use native event listener in SD Polyfill
-      if (hasSDPolyfill) {
-        target.removeEventListener_(eventName, this.boundHandler);
-      } else {
-        target.removeEventListener(eventName, this.boundHandler);
-      }
+      target.removeEventListener(eventName, this.boundHandler);
     },
     // EVENT CREATION AND TRACKING
     /**
@@ -255,11 +254,12 @@
           if (HAS_SVG_INSTANCE && eventCopy[p] instanceof SVGElementInstance) {
             eventCopy[p] = eventCopy[p].correspondingUseElement;
           }
-          eventCopy[p] = wrap(eventCopy[p]);
         }
       }
       // keep the semantics of preventDefault
-      eventCopy.preventDefault = inEvent.preventDefault;
+      eventCopy.preventDefault = function() {
+        inEvent.preventDefault();
+      };
       return eventCopy;
     },
     /**
@@ -286,7 +286,7 @@
         for (var j = 0, g, fn; j < this.gestures.length; j++) {
           g = this.gestures[j];
           fn = g[e.type];
-          if (fn) {
+          if (g.enabled && fn) {
             fn.call(g, e);
           }
         }
@@ -304,9 +304,61 @@
   dispatcher.boundHandler = dispatcher.eventHandler.bind(dispatcher);
   dispatcher.boundGestureTrigger = dispatcher.gestureTrigger.bind(dispatcher);
   scope.dispatcher = dispatcher;
-  scope.register = function(root) {
-    dispatcher.register(root);
+
+  /**
+   *
+   * Initializes `node` for receiving events of type `gesture`
+   *
+   * Optionally, `touchAction` will set the touch-action of the node.
+   * The default is `auto`.
+   *
+   * If `gesture` is the only listener set up, the underlying gesture is then enabled.
+   *
+   * @param {Element} node
+   * @param {string} gesture
+   * @param {string} touchAction
+   */
+  scope.addGesture = function(node, gesture, touchAction) {
+    var dep = dispatcher.dependencyMap[gesture];
+    if (dep) {
+      if (touchAction && !node.hasAttribute('touch-action')) {
+        node.setAttribute('touch-action', touchAction);
+      }
+      if (dep.listeners === 0) {
+        dispatcher.gestures[dep.index].enabled = true;
+      }
+      dep.listeners++;
+      if (!node._pgListeners) {
+        dispatcher.register(node);
+        node._pgListeners = 0;
+      }
+      node._pgListeners++;
+    }
   };
-  scope.unregister = dispatcher.unregister.bind(dispatcher);
-  scope.wrap = wrap;
+
+  /**
+   * Tears down the gesture configuration for `node`
+   *
+   * If no more listeners for `gesture` exist, the underlying gesture recognizer is disabled.
+   *
+   * @param {Element} node
+   * @param {string} gesture
+   */
+  scope.removeGesture = function(node, gesture) {
+    var dep = dispatcher.dependencyMap[gesture];
+    if (dep) {
+      if (dep.listeners > 0) {
+        dep.listeners--;
+      }
+      if (dep.listeners === 0) {
+        dispatcher.gestures[dep.index].enabled = false;
+      }
+      if (node._pgListeners > 0) {
+        node._pgListeners--;
+      }
+      if (node._pgListeners === 0) {
+        dispatcher.unregister(node);
+      }
+    }
+  };
 })(window.PolymerGestures);
