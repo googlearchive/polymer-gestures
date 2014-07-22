@@ -17,7 +17,7 @@ Supported events:
     * Can be prevented by calling any gesture event's preventTap function
 
 Not yet implemented:
-* flick
+* swipe
 * hold
 * holdpulse
 * release
