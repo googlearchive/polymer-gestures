@@ -97,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       find('capture', 'output', 'enterleave');
       events.forEach(function(en) {
-        capture.addEventListener(en, function(inEvent) {
+        PolymerGestures.addGesture(capture, en, function(inEvent) {
           appendOutput(inEvent.type + ' [' + inEvent.pointerId + ']');
           inEvent.preventDefault();
         });

@@ -306,24 +306,17 @@
   scope.dispatcher = dispatcher;
 
   /**
+   * Listen for `gesture` on `node` with the `handler` function
    *
-   * Initializes `node` for receiving events of type `gesture`
-   *
-   * Optionally, `touchAction` will set the touch-action of the node.
-   * The default is `auto`.
-   *
-   * If `gesture` is the only listener set up, the underlying gesture is then enabled.
+   * If `handler` is the first listener for `gesture`, the underlying gesture recognizer is then enabled.
    *
    * @param {Element} node
    * @param {string} gesture
-   * @param {string} touchAction
+   * @return Boolean `gesture` is a valid gesture
    */
-  scope.addGesture = function(node, gesture, touchAction) {
+  scope.activateGesture = function(node, gesture) {
     var dep = dispatcher.dependencyMap[gesture];
     if (dep) {
-      if (touchAction && !node.hasAttribute('touch-action')) {
-        node.setAttribute('touch-action', touchAction);
-      }
       if (dep.listeners === 0) {
         dispatcher.gestures[dep.index].enabled = true;
       }
@@ -334,17 +327,33 @@
       }
       node._pgListeners++;
     }
+    return Boolean(dep);
+  };
+
+  /**
+   *
+   * Listen for `gesture` from `node` with `handler` function.
+   *
+   * @param {Element} node
+   * @param {string} gesture
+   * @param {Function} handler
+   */
+  scope.addGesture = function(node, gesture, handler) {
+    if (handler && scope.activateGesture(node, gesture)) {
+      node.addEventListener(gesture, handler);
+    }
   };
 
   /**
    * Tears down the gesture configuration for `node`
    *
-   * If no more listeners for `gesture` exist, the underlying gesture recognizer is disabled.
+   * If `handler` is the last listener for `gesture`, the underlying gesture recognizer is disabled.
    *
    * @param {Element} node
    * @param {string} gesture
+   * @return Boolean `gesture` is a valid gesture
    */
-  scope.removeGesture = function(node, gesture) {
+  scope.deactivateGesture = function(node, gesture) {
     var dep = dispatcher.dependencyMap[gesture];
     if (dep) {
       if (dep.listeners > 0) {
@@ -359,6 +368,20 @@
       if (node._pgListeners === 0) {
         dispatcher.unregister(node);
       }
+    }
+    return Boolean(dep);
+  };
+
+  /**
+   * Stop listening for `gesture` from `node` with `handler` function.
+   *
+   * @param {Element} node
+   * @param {string} gesture
+   * @param {Function} handler
+   */
+  scope.removeGesture = function(node, gesture, handler) {
+    if (handler && scope.deactivateGesture(node, gesture)) {
+      node.removeEventListener(gesture, handler);
     }
   };
 })(window.PolymerGestures);
