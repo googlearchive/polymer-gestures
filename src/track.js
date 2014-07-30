@@ -116,10 +116,14 @@
      exposes: [
       'trackstart',
       'track',
+      'trackx',
+      'tracky',
       'trackend'
      ],
      defaultActions: {
-       'track': 'none'
+       'track': 'none',
+       'trackx': 'pan-y',
+       'tracky': 'pan-x'
      },
      WIGGLE_THRESHOLD: 4,
      clampDir: function(inDelta) {
@@ -139,33 +143,42 @@
        var dd = this.calcPositionDelta(t.lastMoveEvent, inEvent);
        if (dd.x) {
          t.xDirection = this.clampDir(dd.x);
+       } else if (inType === 'trackx') {
+         return;
        }
        if (dd.y) {
          t.yDirection = this.clampDir(dd.y);
+       } else if (inType === 'tracky') {
+         return;
        }
-       var e = eventFactory.makeGestureEvent(inType, {
+       var gestureProto = {
          bubbles: true,
          cancelable: true,
-         dx: d.x,
-         dy: d.y,
-         ddx: dd.x,
-         ddy: dd.y,
-         x: inEvent.x,
-         y: inEvent.y,
-         clientX: inEvent.clientX,
-         clientY: inEvent.clientY,
-         pageX: inEvent.pageX,
-         pageY: inEvent.pageY,
-         screenX: inEvent.screenX,
-         screenY: inEvent.screenY,
-         xDirection: t.xDirection,
-         yDirection: t.yDirection,
          trackInfo: t.trackInfo,
          relatedTarget: inEvent.relatedTarget,
          pointerType: inEvent.pointerType,
          pointerId: inEvent.pointerId,
          _source: 'track'
-       });
+       };
+       if (inType !== 'tracky') {
+         gestureProto.x = inEvent.x;
+         gestureProto.dx = d.x;
+         gestureProto.ddx = dd.x;
+         gestureProto.clientX = inEvent.clientX;
+         gestureProto.pageX = inEvent.pageX;
+         gestureProto.screenX = inEvent.screenX;
+         gestureProto.xDirection = t.xDirection;
+       }
+       if (inType !== 'trackx') {
+         gestureProto.dy = d.y;
+         gestureProto.ddy = dd.y;
+         gestureProto.y = inEvent.y;
+         gestureProto.clientY = inEvent.clientY;
+         gestureProto.pageY = inEvent.pageY;
+         gestureProto.screenY = inEvent.screenY;
+         gestureProto.yDirection = t.yDirection;
+       }
+       var e = eventFactory.makeGestureEvent(inType, gestureProto);
        t.downTarget.dispatchEvent(e);
      },
      down: function(inEvent) {
@@ -193,10 +206,12 @@
              p.tracking = true;
              p.lastMoveEvent = p.downEvent;
              this.fireTrack('trackstart', inEvent, p);
-             this.fireTrack('track', inEvent, p);
            }
-         } else {
+         }
+         if (p.tracking) {
            this.fireTrack('track', inEvent, p);
+           this.fireTrack('trackx', inEvent, p);
+           this.fireTrack('tracky', inEvent, p);
          }
          p.lastMoveEvent = inEvent;
        }
