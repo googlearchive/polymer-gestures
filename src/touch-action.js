@@ -10,7 +10,7 @@
 
 (function() {
   function shadowSelector(v) {
-    return 'head /deep/ ' + selector(v);
+    return 'html /deep/ ' + selector(v);
   }
   function selector(v) {
     return '[touch-action="' + v + '"]';
