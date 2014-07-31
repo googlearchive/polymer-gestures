@@ -115,7 +115,11 @@
     eventSourceList: [],
     gestures: [],
     // map gesture event -> {listeners: int, index: gestures[int]}
-    dependencyMap: Object.create(null),
+    dependencyMap: {
+      // make sure down and up are in the map to trigger "register"
+      down: {listeners: 0, index: -1},
+      up: {listeners: 0, index: -1}
+    },
     gestureQueue: [],
     /**
      * Add a new event source that will generate pointer events.
@@ -318,7 +322,10 @@
     var dep = dispatcher.dependencyMap[gesture];
     if (dep) {
       if (dep.listeners === 0) {
-        dispatcher.gestures[dep.index].enabled = true;
+        var recognizer = dispatcher.gestures[dep.index];
+        if (recognizer) {
+          recognizer.enabled = true;
+        }
       }
       dep.listeners++;
       if (!node._pgListeners) {
@@ -361,7 +368,10 @@
         dep.listeners--;
       }
       if (dep.listeners === 0) {
-        dispatcher.gestures[dep.index].enabled = false;
+        var recognizer = dispatcher.gestures[dep.index];
+        if (recognizer) {
+          recognizer.enabled = false;
+        }
       }
       if (node._pgListeners > 0) {
         node._pgListeners--;
