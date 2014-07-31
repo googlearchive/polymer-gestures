@@ -339,7 +339,8 @@
    * @param {Function} handler
    */
   scope.addGesture = function(node, gesture, handler) {
-    if (handler && scope.activateGesture(node, gesture)) {
+    if (handler) {
+      scope.activateGesture(node, gesture);
       node.addEventListener(gesture, handler);
     }
   };
@@ -380,7 +381,8 @@
    * @param {Function} handler
    */
   scope.removeGesture = function(node, gesture, handler) {
-    if (handler && scope.deactivateGesture(node, gesture)) {
+    if (handler) {
+      scope.deactivateGesture(node, gesture);
       node.removeEventListener(gesture, handler);
     }
   };
