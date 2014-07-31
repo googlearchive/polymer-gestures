@@ -188,7 +188,8 @@
            // start tracking only if finger moves more than WIGGLE_THRESHOLD
            if (move > this.WIGGLE_THRESHOLD) {
              p.tracking = true;
-             this.fireTrack('trackstart', p.downEvent, p);
+             p.lastMoveEvent = p.downEvent;
+             this.fireTrack('trackstart', inEvent, p);
              this.fireTrack('track', inEvent, p);
            }
          } else {
