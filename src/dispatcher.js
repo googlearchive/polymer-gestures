@@ -338,7 +338,7 @@
    * @param {string} gesture
    * @param {Function} handler
    */
-  scope.addGesture = function(node, gesture, handler) {
+  scope.addEventListener = function(node, gesture, handler) {
     if (handler) {
       scope.activateGesture(node, gesture);
       node.addEventListener(gesture, handler);
@@ -380,7 +380,7 @@
    * @param {string} gesture
    * @param {Function} handler
    */
-  scope.removeGesture = function(node, gesture, handler) {
+  scope.removeEventListener = function(node, gesture, handler) {
     if (handler) {
       scope.deactivateGesture(node, gesture);
       node.removeEventListener(gesture, handler);
