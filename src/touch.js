@@ -238,7 +238,11 @@
     },
     touchmove: function(inEvent) {
       if (HAS_TOUCH_ACTION) {
-        this.processTouches(inEvent, this.move);
+        // touchevent.cancelable == false is sent when the page is scrolling under native Touch Action in Chrome 36
+        // https://groups.google.com/a/chromium.org/d/msg/input-dev/wHnyukcYBcA/b9kmtwM1jJQJ
+        if (inEvent.cancelable) {
+          this.processTouches(inEvent, this.move);
+        }
       } else {
         if (!this.scrolling) {
           if (this.scrolling === null && this.shouldScroll(inEvent)) {
