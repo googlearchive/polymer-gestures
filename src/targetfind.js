@@ -109,17 +109,17 @@
       return this.searchRoot(s, x, y);
     },
     findTouchAction: function(inEvent) {
-      var n, ct = inEvent.currentTarget;
+      var n;
       if (HAS_FULL_PATH && inEvent.path) {
         var path = inEvent.path;
-        for (var i = path.indexOf(ct); i >= 0 && i < path.length; i++) {
+        for (var i = 0; i < path.length; i++) {
           n = path[i];
-          if (n.hasAttribute('touch-action')) {
+          if (n.nodeType === Node.ELEMENT_NODE && n.hasAttribute('touch-action')) {
             return n.getAttribute('touch-action');
           }
         }
       } else {
-        n = inEvent.currentTarget;
+        n = inEvent.target;
         while(n) {
           if (n.hasAttribute('touch-action')) {
             return n.getAttribute('touch-action');
