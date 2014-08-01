@@ -118,6 +118,9 @@
       'track',
       'trackend'
      ],
+     defaultActions: {
+       'track': 'none'
+     },
      WIGGLE_THRESHOLD: 4,
      clampDir: function(inDelta) {
        return inDelta > 0 ? 1 : -1;

@@ -321,8 +321,8 @@
   scope.activateGesture = function(node, gesture) {
     var dep = dispatcher.dependencyMap[gesture];
     if (dep) {
+      var recognizer = dispatcher.gestures[dep.index];
       if (dep.listeners === 0) {
-        var recognizer = dispatcher.gestures[dep.index];
         if (recognizer) {
           recognizer.enabled = true;
         }
@@ -331,6 +331,13 @@
       if (!node._pgListeners) {
         dispatcher.register(node);
         node._pgListeners = 0;
+      }
+      // TODO(dfreedm): re-evaluate bookkeeping to avoid using attributes
+      if (recognizer) {
+        var touchAction = recognizer.defaultActions && recognizer.defaultActions[gesture];
+        if (touchAction && !node.hasAttribute('touch-action')) {
+          node.setAttribute('touch-action', touchAction);
+        }
       }
       node._pgListeners++;
     }
