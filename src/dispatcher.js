@@ -335,8 +335,20 @@
       // TODO(dfreedm): re-evaluate bookkeeping to avoid using attributes
       if (recognizer) {
         var touchAction = recognizer.defaultActions && recognizer.defaultActions[gesture];
-        if (touchAction && !node.hasAttribute('touch-action')) {
-          node.setAttribute('touch-action', touchAction);
+        var actionNode;
+        switch(node.nodeType) {
+          case Node.ELEMENT_NODE:
+            actionNode = node;
+          break;
+          case Node.DOCUMENT_FRAGMENT_NODE:
+            actionNode = node.host;
+          break;
+          default:
+            actionNode = null;
+          break;
+        }
+        if (touchAction && actionNode && !actionNode.hasAttribute('touch-action')) {
+          actionNode.setAttribute('touch-action', touchAction);
         }
       }
       node._pgListeners++;
