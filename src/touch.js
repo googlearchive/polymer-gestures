@@ -17,7 +17,9 @@
   var CLICK_COUNT_TIMEOUT = 200;
   var HYSTERESIS = 20;
   var ATTRIB = 'touch-action';
-  var HAS_TOUCH_ACTION = ATTRIB in document.head.style;
+  // TODO(dfreedm): disable until http://crbug.com/399765 is resolved
+  // var HAS_TOUCH_ACTION = ATTRIB in document.head.style;
+  var HAS_TOUCH_ACTION = false;
 
   // handler block for native touch events
   var touchEvents = {
