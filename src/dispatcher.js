@@ -147,7 +147,7 @@
       obj.listeners = 0;
       obj.index = this.gestures.length;
       for (var i = 0, g; i < source.exposes.length; i++) {
-        g = source.exposes[i];
+        g = source.exposes[i].toLowerCase();
         this.dependencyMap[g] = obj;
       }
       this.gestures.push(source);
@@ -319,7 +319,8 @@
    * @return Boolean `gesture` is a valid gesture
    */
   scope.activateGesture = function(node, gesture) {
-    var dep = dispatcher.dependencyMap[gesture];
+    var g = gesture.toLowerCase();
+    var dep = dispatcher.dependencyMap[g];
     if (dep) {
       var recognizer = dispatcher.gestures[dep.index];
       if (dep.listeners === 0) {
@@ -334,7 +335,7 @@
       }
       // TODO(dfreedm): re-evaluate bookkeeping to avoid using attributes
       if (recognizer) {
-        var touchAction = recognizer.defaultActions && recognizer.defaultActions[gesture];
+        var touchAction = recognizer.defaultActions && recognizer.defaultActions[g];
         var actionNode;
         switch(node.nodeType) {
           case Node.ELEMENT_NODE:
@@ -382,7 +383,8 @@
    * @return Boolean `gesture` is a valid gesture
    */
   scope.deactivateGesture = function(node, gesture) {
-    var dep = dispatcher.dependencyMap[gesture];
+    var g = gesture.toLowerCase();
+    var dep = dispatcher.dependencyMap[g];
     if (dep) {
       if (dep.listeners > 0) {
         dep.listeners--;
