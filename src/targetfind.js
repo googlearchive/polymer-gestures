@@ -127,6 +127,8 @@
           n = n.parentNode || n.host;
         }
       }
+      // auto is default
+      return "auto";
     },
     LCA: function(a, b) {
       if (a === b) {
