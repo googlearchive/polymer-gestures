@@ -363,11 +363,12 @@
    * @param {Element} node
    * @param {string} gesture
    * @param {Function} handler
+   * @param {Boolean} capture
    */
-  scope.addEventListener = function(node, gesture, handler) {
+  scope.addEventListener = function(node, gesture, handler, capture) {
     if (handler) {
       scope.activateGesture(node, gesture);
-      node.addEventListener(gesture, handler);
+      node.addEventListener(gesture, handler, capture);
     }
   };
 
@@ -408,11 +409,12 @@
    * @param {Element} node
    * @param {string} gesture
    * @param {Function} handler
+   * @param {Boolean} capture
    */
-  scope.removeEventListener = function(node, gesture, handler) {
+  scope.removeEventListener = function(node, gesture, handler, capture) {
     if (handler) {
       scope.deactivateGesture(node, gesture);
-      node.removeEventListener(gesture, handler);
+      node.removeEventListener(gesture, handler, capture);
     }
   };
 })(window.PolymerGestures);
