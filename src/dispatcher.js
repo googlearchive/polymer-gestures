@@ -94,6 +94,9 @@
 
   var eventFactory = scope.eventFactory;
 
+  // set of recognizers to run for the currently handled event
+  var currentGestures;
+
   /**
    * This module is for normalizing events. Mouse and Touch events will be
    * collected here, and fire PointerEvents that have the same semantics, no
@@ -190,6 +193,23 @@
 
       // TODO(dfreedm): make this check more granular, allow for minimal event generation
       // e.g inEvent._handledByPG['tap'] and inEvent._handledByPG['track'], etc
+      if (!inEvent._handledByPG) {
+        currentGestures = {};
+      }
+      // map gesture names to ordered set of recognizers
+      var gesturesWanted = inEvent.currentTarget._pgEvents || {};
+      var gk = Object.keys(gesturesWanted);
+      for (var i = 0, r, ri, g; i < gk.length; i++) {
+        // gesture
+        g = gk[i];
+        if (gesturesWanted[g] > 0) {
+          // lookup gesture recognizer
+          r = this.dependencyMap[g];
+          // recognizer index
+          ri = r ? r.index : -1;
+          currentGestures[ri] = true;
+        }
+      }
       if (inEvent._handledByPG) {
         return;
       }
@@ -288,10 +308,13 @@
       for (var i = 0, e; i < this.gestureQueue.length; i++) {
         e = this.gestureQueue[i];
         for (var j = 0, g, fn; j < this.gestures.length; j++) {
-          g = this.gestures[j];
-          fn = g[e.type];
-          if (g.enabled && fn) {
-            fn.call(g, e);
+          // only run recognizer if an element in the source event's path is listening for those gestures
+          if (currentGestures[j]) {
+            g = this.gestures[j];
+            fn = g[e.type];
+            if (fn) {
+              fn.call(g, e);
+            }
           }
         }
       }
@@ -352,6 +375,10 @@
           actionNode.setAttribute('touch-action', touchAction);
         }
       }
+      if (!node._pgEvents) {
+        node._pgEvents = {};
+      }
+      node._pgEvents[gesture] = (node._pgEvents[gesture] || 0) + 1;
       node._pgListeners++;
     }
     return Boolean(dep);
@@ -400,6 +427,13 @@
       }
       if (node._pgListeners === 0) {
         dispatcher.unregister(node);
+      }
+      if (node._pgEvents) {
+        if (node._pgEvents[gesture] > 0) {
+          node._pgEvents[gesture]--;
+        } else {
+          node._pgEvents[gesture] = 0;
+        }
       }
     }
     return Boolean(dep);
