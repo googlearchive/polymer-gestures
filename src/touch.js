@@ -47,18 +47,17 @@
       EMITTER: 'none',
       XSCROLLER: 'pan-x',
       YSCROLLER: 'pan-y',
-      SCROLLER: /^(?:pan-x pan-y)|(?:pan-y pan-x)|auto|manipulation$/
     },
     touchActionToScrollType: function(touchAction) {
       var t = touchAction;
       var st = this.scrollTypes;
-      if (t === 'none') {
+      if (t === st.EMITTER) {
         return 'none';
       } else if (t === st.XSCROLLER) {
         return 'X';
       } else if (t === st.YSCROLLER) {
         return 'Y';
-      } else if (st.SCROLLER.exec(t)) {
+      } else {
         return 'XY';
       }
     },
