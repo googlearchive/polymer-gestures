@@ -36,6 +36,5 @@
       }
     }
   }
-
-  dispatcher.register(document);
+  dispatcher.register(document, true);
 })(window.PolymerGestures);

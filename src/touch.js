@@ -34,8 +34,8 @@
       'up',
       'move'
     ],
-    register: function(target) {
-      if (target === document) {
+    register: function(target, initial) {
+      if (initial) {
         return;
       }
       dispatcher.listen(target, this.events);

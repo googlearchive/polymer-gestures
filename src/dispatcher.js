@@ -152,11 +152,11 @@
       }
       this.gestures.push(source);
     },
-    register: function(element) {
+    register: function(element, initial) {
       var l = this.eventSourceList.length;
       for (var i = 0, es; (i < l) && (es = this.eventSourceList[i]); i++) {
         // call eventsource register
-        es.register.call(es, element);
+        es.register.call(es, element, initial);
       }
     },
     unregister: function(element) {
