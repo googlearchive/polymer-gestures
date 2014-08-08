@@ -94,6 +94,9 @@
 
   var eventFactory = scope.eventFactory;
 
+  // set of recognizers to run for the currently handled event
+  var currentGestures;
+
   /**
    * This module is for normalizing events. Mouse and Touch events will be
    * collected here, and fire PointerEvents that have the same semantics, no
@@ -108,6 +111,7 @@
    */
   var dispatcher = {
     pointermap: new scope.PointerMap(),
+    requiredGestures: new scope.PointerMap(),
     eventMap: Object.create(null),
     // Scope objects for native events.
     // This exists for ease of testing.
@@ -168,6 +172,7 @@
     },
     // EVENTS
     down: function(inEvent) {
+      this.requiredGestures.set(inEvent.pointerId, currentGestures);
       this.fireEvent('down', inEvent);
     },
     move: function(inEvent) {
@@ -177,10 +182,12 @@
     },
     up: function(inEvent) {
       this.fireEvent('up', inEvent);
+      this.requiredGestures.delete(inEvent.pointerId);
     },
     cancel: function(inEvent) {
       inEvent.tapPrevented = true;
       this.fireEvent('up', inEvent);
+      this.requiredGestures.delete(inEvent.pointerId);
     },
     // LISTENER LOGIC
     eventHandler: function(inEvent) {
@@ -188,12 +195,34 @@
       // platform events. This can happen when two elements in different scopes
       // are set up to create pointer events, which is relevant to Shadow DOM.
 
-      // TODO(dfreedm): make this check more granular, allow for minimal event generation
-      // e.g inEvent._handledByPG['tap'] and inEvent._handledByPG['track'], etc
+      var type = inEvent.type;
+
+      // only generate the list of desired events on "down"
+      if (type === 'touchstart' || type === 'mousedown' || type === 'pointerdown' || type === 'MSPointerDown') {
+        if (!inEvent._handledByPG) {
+          currentGestures = {};
+        }
+        // map gesture names to ordered set of recognizers
+        var gesturesWanted = inEvent.currentTarget._pgEvents;
+        if (gesturesWanted) {
+          var gk = Object.keys(gesturesWanted);
+          for (var i = 0, r, ri, g; i < gk.length; i++) {
+            // gesture
+            g = gk[i];
+            if (gesturesWanted[g] > 0) {
+              // lookup gesture recognizer
+              r = this.dependencyMap[g];
+              // recognizer index
+              ri = r ? r.index : -1;
+              currentGestures[ri] = true;
+            }
+          }
+        }
+      }
+
       if (inEvent._handledByPG) {
         return;
       }
-      var type = inEvent.type;
       var fn = this.eventMap && this.eventMap[type];
       if (fn) {
         fn(inEvent);
@@ -285,13 +314,17 @@
     },
     gestureTrigger: function() {
       // process the gesture queue
-      for (var i = 0, e; i < this.gestureQueue.length; i++) {
+      for (var i = 0, e, rg; i < this.gestureQueue.length; i++) {
         e = this.gestureQueue[i];
+        rg = e._requiredGestures;
         for (var j = 0, g, fn; j < this.gestures.length; j++) {
-          g = this.gestures[j];
-          fn = g[e.type];
-          if (g.enabled && fn) {
-            fn.call(g, e);
+          // only run recognizer if an element in the source event's path is listening for those gestures
+          if (rg[j]) {
+            g = this.gestures[j];
+            fn = g[e.type];
+            if (fn) {
+              fn.call(g, e);
+            }
           }
         }
       }
@@ -302,6 +335,7 @@
       if (!this.gestureQueue.length) {
         requestAnimationFrame(this.boundGestureTrigger);
       }
+      ev._requiredGestures = this.requiredGestures.get(ev.pointerId);
       this.gestureQueue.push(ev);
     }
   };
@@ -323,12 +357,6 @@
     var dep = dispatcher.dependencyMap[g];
     if (dep) {
       var recognizer = dispatcher.gestures[dep.index];
-      if (dep.listeners === 0) {
-        if (recognizer) {
-          recognizer.enabled = true;
-        }
-      }
-      dep.listeners++;
       if (!node._pgListeners) {
         dispatcher.register(node);
         node._pgListeners = 0;
@@ -352,6 +380,10 @@
           actionNode.setAttribute('touch-action', touchAction);
         }
       }
+      if (!node._pgEvents) {
+        node._pgEvents = {};
+      }
+      node._pgEvents[g] = (node._pgEvents[g] || 0) + 1;
       node._pgListeners++;
     }
     return Boolean(dep);
@@ -386,20 +418,18 @@
     var g = gesture.toLowerCase();
     var dep = dispatcher.dependencyMap[g];
     if (dep) {
-      if (dep.listeners > 0) {
-        dep.listeners--;
-      }
-      if (dep.listeners === 0) {
-        var recognizer = dispatcher.gestures[dep.index];
-        if (recognizer) {
-          recognizer.enabled = false;
-        }
-      }
       if (node._pgListeners > 0) {
         node._pgListeners--;
       }
       if (node._pgListeners === 0) {
         dispatcher.unregister(node);
+      }
+      if (node._pgEvents) {
+        if (node._pgEvents[g] > 0) {
+          node._pgEvents[g]--;
+        } else {
+          node._pgEvents[g] = 0;
+        }
       }
     }
     return Boolean(dep);
