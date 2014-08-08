@@ -20,13 +20,22 @@
     HAS_BUTTONS = new MouseEvent('test', {buttons: 1}).buttons === 1;
   } catch (e) {}
 
+  var CONDITIONAL_EVENTS = [
+    'mousemove'
+  ];
+
+  var ALWAYS = [
+    'mousedown',
+    'mouseup'
+  ];
+
   // handler block for native mouse events
   var mouseEvents = {
     POINTER_ID: 1,
     POINTER_TYPE: 'mouse',
     events: [
       'mousedown',
-      'mousemove',
+      'mousedown',
       'mouseup'
     ],
     exposes: [
@@ -35,10 +44,10 @@
       'move'
     ],
     register: function(target) {
-      dispatcher.listen(target, this.events);
+      dispatcher.listen(target, ALWAYS);
     },
     unregister: function(target) {
-      dispatcher.unlisten(target, this.events);
+      dispatcher.unlisten(target, ALWAYS);
     },
     lastTouches: [],
     // collide with the global mouse listener
@@ -74,7 +83,13 @@
         }
         var e = this.prepareEvent(inEvent);
         e.target = scope.findTarget(inEvent);
+        var tmp = pointermap.get(this.POINTER_ID);
+        if (tmp) {
+          dispatcher.unlisten(tmp, CONDITIONAL_EVENTS);
+        }
         pointermap.set(this.POINTER_ID, e.target);
+        dispatcher.listen(e.target, CONDITIONAL_EVENTS);
+        dispatcher.listen(document, CONDITIONAL_EVENTS);
         dispatcher.down(e);
       }
     },
@@ -104,6 +119,11 @@
       }
     },
     cleanupMouse: function() {
+      var tmp = pointermap.get(this.POINTER_ID);
+      if (tmp) {
+        dispatcher.unlisten(tmp, CONDITIONAL_EVENTS);
+      }
+      dispatcher.unlisten(document, CONDITIONAL_EVENTS);
       pointermap['delete'](this.POINTER_ID);
     }
   };
