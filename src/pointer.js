@@ -23,9 +23,6 @@
       return e;
     },
     register: function(target) {
-      if (target !== document) {
-        return;
-      }
       dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
@@ -41,9 +38,12 @@
       dispatcher.down(e);
     },
     pointermove: function(inEvent) {
-      var e = this.prepareEvent(inEvent);
-      e.target = pointermap.get(e.pointerId);
-      dispatcher.move(e);
+      var target = pointermap.get(inEvent.pointerId);
+      if (target) {
+        var e = this.prepareEvent(inEvent);
+        e.target = target;
+        dispatcher.move(e);
+      }
     },
     pointerup: function(inEvent) {
       var e = this.prepareEvent(inEvent);
