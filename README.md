@@ -1,7 +1,5 @@
 ## pointer-gestures
-Library which gesture events in a mobile-performant way.
-
-_In the next release, polymer-gestures will replace (the now deprecated) [PointerGestures](https://github.com/Polymer/PointerGestures), and [PointerEvents](https://github.com/Polymer/PointerEvents) will be removed from the default build._
+> A set of rich gestures for desktop and mobile.
 
 Supported events:
 * down
