@@ -4,29 +4,28 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
 
   var sourceFiles = grunt.file.readJSON('build.json');
+  var banner = grunt.file.read('banner.txt');
   var toolsPath = '../tools/';
-  var licenseFile = toolsPath + 'LICENSE';
 
   grunt.initConfig({
     concat: {
-      pointerevents: {
+      polymergestures: {
         options: {
           stripBanners: true,
-          banner: grunt.file.read(licenseFile)
+          banner: banner
         },
         nonull: true,
         src: sourceFiles,
-        dest: 'pointerevents.dev.js'
+        dest: 'polymergestures.dev.js'
       }
     },
     uglify: {
-      pointerevents: {
+      polymergestures: {
         options: {
-          // sourceMap: 'pointerevents.min.js.map',
-          banner: grunt.file.read(licenseFile)
+          banner: banner
         },
         nonull: true,
-        dest: 'pointerevents.min.js',
+        dest: 'polymergestures.min.js',
         src: sourceFiles
       }
     },
@@ -35,7 +34,7 @@ module.exports = function(grunt) {
         configFile: 'karma.conf.js',
         keepalive: true
       },
-      pointerevents: {
+      polymergestures: {
       },
       buildbot: {
         reporters: 'crbot',
@@ -46,6 +45,6 @@ module.exports = function(grunt) {
 
   grunt.loadTasks(toolsPath + 'tasks');
   grunt.registerTask('default', ['concat', 'uglify']);
-  grunt.registerTask('test', ['override-chrome-launcher', 'karma:pointerevents']);
+  grunt.registerTask('test', ['override-chrome-launcher', 'karma:polymergestures']);
   grunt.registerTask('test-buildbot', ['override-chrome-launcher', 'karma:buildbot']);
 };
