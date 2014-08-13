@@ -18,13 +18,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <!-- Chai -->
   <script src="../../tools/test/chai/chai.js"></script>
   <script src="../polymer-gestures.js"></script>
+  <script src="js/setup.js"></script>
   <script src="js/fake.js"></script>
   <!-- Tests -->
-  <script src="js/tests.js"></script>
+  <script src="js/pointermap.js"></script>
+  <script src="js/gestureTracking.js"></script>
 </head>
 <body>
   <div id="mocha"></div>
-  <div id="box" style="height: 50px; width: 50px; position: absolute;"></div>
   <script>
     mocha.run();
   </script>

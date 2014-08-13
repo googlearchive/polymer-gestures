@@ -31,7 +31,7 @@ module.exports = function(grunt) {
     },
     karma: {
       options: {
-        configFile: 'karma.conf.js',
+        configFile: 'conf/karma.conf.js',
         keepalive: true
       },
       polymergestures: {
