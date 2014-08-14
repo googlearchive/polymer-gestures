@@ -83,7 +83,9 @@ suite('Event Listeners', function() {
       var worked = false;
       var fn = function(){ worked = true; };
       PolymerGestures.addEventListener(work, 'test', fn);
-      work.dispatchEvent(new CustomEvent('test'));
+      var ev = document.createEvent('Event');
+      ev.initEvent('test', true, true);
+      work.dispatchEvent(ev);
       assert.isTrue(worked);
     });
   });
@@ -111,10 +113,14 @@ suite('Event Listeners', function() {
       var worked = 0;
       var fn = function(){ worked++; };
       PolymerGestures.addEventListener(work, 'test', fn);
-      work.dispatchEvent(new CustomEvent('test'));
+      var ev = document.createEvent('Event');
+      ev.initEvent('test', true, true);
+      work.dispatchEvent(ev);
       assert.equal(worked, 1);
       PolymerGestures.removeEventListener(work, 'test', fn);
-      work.dispatchEvent(new CustomEvent('test'));
+      ev = document.createEvent('Event');
+      ev.initEvent('test', true, true);
+      work.dispatchEvent(ev);
       assert.equal(worked, 1);
     });
   });
