@@ -1,8 +1,8 @@
 module.exports = function(karma) {
-  var common = require('../tools/test/karma-common.conf.js');
+  var common = require('../../tools/test/karma-common.conf.js');
   karma.set(common.mixin_common_opts(karma, {
     // base path, that will be used to resolve files and exclude
-    basePath: '../',
+    basePath: '../../',
 
     // list of files / patterns to load in the browser
     files: [
@@ -19,8 +19,10 @@ module.exports = function(karma) {
       'polymer-gestures/src/pointer.js',
       'polymer-gestures/src/platform-events.js',
       'polymer-gestures/src/track.js',
+      'polymer-gestures/src/hold.js',
       'polymer-gestures/src/tap.js',
-      'polymer-gestures/test/setup.js'
+      'polymer-gestures/test/js/setup.js',
+      'polymer-gestures/test/js/*.js'
     ]
   }));
 };
