@@ -7,76 +7,135 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
-function Fake() {
-}
-
-Fake.prototype = {
-  targetAt: function(x, y) {
-    return PolymerGestures.targetFinding.searchRoot(document, x, y) || document;
-  },
-  middleOfNode: function(node) {
-    var bcr = node.getBoundingClientRect();
-    return {y: bcr.top + (bcr.height / 2), x: bcr.left + (bcr.width / 2)};
-  },
-  makeEvent: function(type, x, y) {
-    var e = document.createEvent('MouseEvent');
-    e.initMouseEvent('mouse' + type, true, true, null, null, 0, 0, x, y, false, false, false, false, 0, null);
-    return e;
-  },
-  downOnNode: function(node, done) {
-    var xy = this.middleOfNode(node);
-    this.downAt(xy.x, xy.y, done);
-  },
-  downAt: function(x, y, done) {
-    this.x = x >>> 0;
-    this.y = y >>> 0;
-    this.target = this.targetAt(x, y);
-    var e = this.makeEvent('down', x, y);
-    this.target.dispatchEvent(e);
-    done();
-  },
-  moveToNode: function(node, done, step) {
-    var xy = this.middleOfNode(node);
-    this.moveTo(xy.x, xy.y, done, step);
-  },
-  moveTo: function(x, y, done, step) {
-    x = x >>> 0;
-    y = y >>> 0;
-    step = step || 5;
-    var dx = (x - this.x) / step;
-    var dy = (y - this.y) / step;
-    var curX = this.x, curY = this.y;
-    var self = this;
-    requestAnimationFrame(function fn() {
-      var e = self.makeEvent('move', curX, curY);
-      self.target.dispatchEvent(e);
-      curX = Math.round(curX + dx);
-      curY = Math.round(curY + dy);
-      if (curX != x && curY != y) {
-        requestAnimationFrame(fn);
+(function(scope) {
+  function extract(args) {
+    var remain = [];
+    var callback = function(){};
+    for (var i = 0; i < args.length; i++) {
+      if (args[i] instanceof Function) {
+        callback = args[i];
+        break;
       } else {
-        self.x = curX;
-        self.y = curY;
-        done();
+        remain.push(args[i]);
       }
-    });
-  },
-  upOnNode: function(node, done, moveto) {
-    var xy = this.middleOfNode(node);
-    this.upAt(xy.x, xy.y, done, moveto);
-  },
-  upAt: function(x, y, done, moveto) {
-    x = x >>> 0;
-    y = y >>> 0;
-    var self = this;
-    if (moveto) {
-      this.moveTo(x, y, function() {
-        self.upAt(x, y, done);
-      });
-    } else {
-      var e = this.makeEvent('up', x, y);
-      this.targetAt(x, y).dispatchEvent(e);
-      done();
     }
+    remain.callback = callback;
+    return remain;
   }
-};
+
+  function Fake() {}
+
+  Fake.prototype = {
+    targetAt: function(x, y) {
+      return PolymerGestures.targetFinding.searchRoot(document, x, y) || document;
+    },
+    middleOfNode: function(node) {
+      var bcr = node.getBoundingClientRect();
+      return {y: bcr.top + (bcr.height / 2), x: bcr.left + (bcr.width / 2)};
+    },
+    topLeftOfNode: function(node) {
+      var bcr = node.getBoundingClientRect();
+      return {y: bcr.top, x: bcr.left};
+    },
+    makeEvent: function(type, x, y) {
+      var e = document.createEvent('MouseEvent');
+      e.initMouseEvent('mouse' + type, true, true, null, null, 0, 0, x, y, false, false, false, false, 0, null);
+      return e;
+    },
+    downOnNode: function() {
+      var args = extract(arguments);
+      var done = args.callback;
+      var node = args[0], offsetX = args[1] || 0, offsetY = args[2] || 0;
+      var xy;
+      if (offsetX === 0 && offsetY === 0) {
+        xy = this.middleOfNode(node);
+      } else {
+        xy = this.topLeftOfNode(node);
+      }
+      this.downAt(xy.x + offsetX, xy.y + offsetY, done);
+    },
+    downAt: function(x, y, done) {
+      done = done || function(){};
+      this.x = x | 0;
+      this.y = y | 0;
+      this.target = this.targetAt(x, y);
+      var e = this.makeEvent('down', x, y);
+      this.target.dispatchEvent(e);
+      done();
+    },
+    moveToNode: function() {
+      var args = extract(arguments);
+      var done = args.callback;
+      var node = args[0], offsetX = args[1] || 0, offsetY = args[2] || 0, step = args[3] || 0;
+      var xy;
+      if (offsetX === 0 && offsetY === 0) {
+        xy = this.middleOfNode(node);
+      } else {
+        xy = this.topLeftOfNode(node);
+      }
+      this.moveTo(xy.x + offsetX, xy.y + offsetY, step, done);
+    },
+    move: function() {
+      var args = extract(arguments);
+      var done = args.callback;
+      var x = args[0] || 0, y = args[1] || 0, step = args[2] || 0;
+      this.moveTo(this.x + x, this.y + y, step, done);
+    },
+    moveTo: function() {
+      var args = extract(arguments);
+      var done = args.callback;
+      if (!this.target) {
+        return done();
+      }
+      var x = args[0] || 0, y = args[1] || 0, step = args[2] || 0;
+      x = x | 0;
+      y = y | 0;
+      step = step || 5;
+      var dx = Math.floor((x - this.x) / step);
+      var dy = Math.floor((y - this.y) / step);
+      var curX = this.x, curY = this.y;
+      var self = this;
+      requestAnimationFrame(function fn() {
+        var e;
+        if (step > 0) {
+          e = self.makeEvent('move', curX, curY);
+          self.target.dispatchEvent(e);
+          curX = Math.round(curX + dx);
+          curY = Math.round(curY + dy);
+          requestAnimationFrame(fn);
+          step--;
+        } else {
+          self.x = x;
+          self.y = y;
+          e = self.makeEvent('move', x, y);
+          self.target.dispatchEvent(e);
+          done();
+        }
+      });
+    },
+    upOnNode: function() {
+      var args = extract(arguments);
+      var done = args.callback;
+      var node = args[0], offsetX = args[1] || 0, offsetY = args[2] || 0;
+      if (offsetX === 0 && offsetY === 0) {
+        xy = this.middleOfNode(node);
+      } else {
+        xy = this.topLeftOfNode(node);
+      }
+      this.upAt(xy.x, xy.y, done);
+    },
+    upAt: function(x, y, done) {
+      done = done || function(){};
+      x = x | 0;
+      y = y | 0;
+      var self = this;
+      this.moveTo(x, y, function() {
+        var e = self.makeEvent('up', x, y);
+        self.targetAt(x, y).dispatchEvent(e);
+        done();
+      });
+    }
+  };
+
+  scope.Fake = Fake;
+})(window);
