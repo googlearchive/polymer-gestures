@@ -23,11 +23,23 @@
     return remain;
   }
 
+  function testNewMouse() {
+    var has = false;
+    try {
+      has = Boolean(new MouseEvent('x'));
+    } catch(_){}
+    return has;
+  }
+
+  var HAS_MS = Boolean(navigator.msPointerEnabled);
+  var HAS_POINTER = Boolean(navigator.pointerEnabled);
+  var HAS_NEW_MOUSE = !HAS_MS && !HAS_POINTER && testNewMouse();
+
   function Fake() {}
 
   Fake.prototype = {
     targetAt: function(x, y) {
-      return PolymerGestures.targetFinding.searchRoot(document, x, y) || document;
+      return PolymerGestures.targetFinding.searchRoot(document, x, y);
     },
     middleOfNode: function(node) {
       var bcr = node.getBoundingClientRect();
@@ -38,8 +50,30 @@
       return {y: bcr.top, x: bcr.left};
     },
     makeEvent: function(type, x, y) {
-      var e = document.createEvent('MouseEvent');
-      e.initMouseEvent('mouse' + type, true, true, null, null, 0, 0, x, y, false, false, false, false, 0, null);
+      var e;
+      var props = {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        buttons: 1,
+        pointerId: 1,
+        isPrimary: true,
+        pointerType: 'mouse'
+      };
+      if (HAS_POINTER) {
+        e = PolymerGestures.eventFactory.makePointerEvent('pointer' + type, props);
+      } else if (HAS_MS) {
+        var cap = type.slice(0, 1).toUpperCase() + type.slice(1);
+        e = PolymerGestures.eventFactory.makePointerEvent('MSPointer' + cap, props);
+      } else {
+        if (HAS_NEW_MOUSE) {
+          e = new MouseEvent('mouse' + type, props);
+        } else {
+          e = document.createEvent('MouseEvent');
+          e.initMouseEvent('mouse' + type, true, true, null, null, 0, 0, x, y, false, false, false, false, 0, null);
+        }
+      }
       return e;
     },
     downOnNode: function() {

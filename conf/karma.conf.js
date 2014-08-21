@@ -22,6 +22,7 @@ module.exports = function(karma) {
       'polymer-gestures/src/hold.js',
       'polymer-gestures/src/tap.js',
       'polymer-gestures/test/js/setup.js',
+      'polymer-gestures/test/js/fake.js',
       'polymer-gestures/test/js/*.js'
     ]
   }));
