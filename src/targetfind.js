@@ -120,7 +120,7 @@
         }
       } else {
         n = inEvent.target;
-        while(n) {
+        while(n && typeof n.hasAttribute === 'function') {
           if (n.hasAttribute('touch-action')) {
             return n.getAttribute('touch-action');
           }
