@@ -1,3 +1,58 @@
+/*
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+
+/*
+ * Basic strategy: find the farthest apart points, use as diameter of circle
+ * react to size change and rotation of the chord
+ */
+
+/**
+ * @module pointer-gestures
+ * @submodule Events
+ * @class pinch
+ */
+/**
+ * Scale of the pinch zoom gesture
+ * @property scale
+ * @type Number
+ */
+/**
+ * Center X position of pointers causing pinch
+ * @property centerX
+ * @type Number
+ */
+/**
+ * Center Y position of pointers causing pinch
+ * @property centerY
+ * @type Number
+ */
+
+/**
+ * @module pointer-gestures
+ * @submodule Events
+ * @class rotate
+ */
+/**
+ * Angle (in degrees) of rotation. Measured from starting positions of pointers.
+ * @property angle
+ * @type Number
+ */
+/**
+ * Center X position of pointers causing rotation
+ * @property centerX
+ * @type Number
+ */
+/**
+ * Center Y position of pointers causing rotation
+ * @property centerY
+ * @type Number
+ */
 (function(scope) {
   var dispatcher = scope.dispatcher;
   var eventFactory = scope.eventFactory;
@@ -44,7 +99,7 @@
     cancel: function(inEvent) {
         this.up(inEvent);
     },
-    dispatchPinch: function(diameter, points) {
+    firePinch: function(diameter, points) {
       var zoom = diameter / this.reference.diameter;
       var e = eventFactory.makeGestureEvent('pinch', {
         scale: zoom,
@@ -53,7 +108,7 @@
       });
       this.reference.target.dispatchEvent(e);
     },
-    dispatchRotate: function(angle, points) {
+    fireRotate: function(angle, points) {
       var diff = Math.round((angle - this.reference.angle) % 360);
       var e = eventFactory.makeGestureEvent('rotate', {
         angle: diff,
@@ -67,10 +122,10 @@
       var diameter = points.diameter;
       var angle = this.calcAngle(points);
       if (diameter != this.reference.diameter) {
-        this.dispatchPinch(diameter, points);
+        this.firePinch(diameter, points);
       }
       if (angle != this.reference.angle) {
-        this.dispatchRotate(angle, points);
+        this.fireRotate(angle, points);
       }
     },
     calcChord: function() {
