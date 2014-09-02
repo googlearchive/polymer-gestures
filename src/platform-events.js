@@ -32,7 +32,9 @@
        */
       var isSafari = nav.userAgent.match('Safari') && !nav.userAgent.match('Chrome');
       if (isSafari) {
-        document.body.addEventListener('touchstart', function(){});
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.addEventListener('touchstart', function(){});
+        });
       }
     }
   }
