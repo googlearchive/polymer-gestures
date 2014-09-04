@@ -25,6 +25,14 @@ Not yet implemented:
 
 More info — https://groups.google.com/forum/#!topic/polymer-dev/ba4aDyOozm8
 
+## How to use
+
+The element, or a parent of the element, should have the `touch-action="none"` attribute.
+
+```javascript
+PolymerGestures.addEventListener(element, eventname, handler, capture);
+```
+
 ## How to build
 
 ```bash
@@ -37,7 +45,7 @@ npm install
 grunt
 ```
 
-## Hot to run
+## How to run
 ```bash
 cd gestures
 python -m SimpleHTTPServer
