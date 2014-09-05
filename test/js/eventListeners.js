@@ -123,5 +123,24 @@ suite('Event Listeners', function() {
       work.dispatchEvent(ev);
       assert.equal(worked, 1);
     });
+
+    test('document keeps mouse event listeners, always', function(done) {
+      var finger = new Fake();
+      work.style.cssText = 'height: 50px; width: 50px;';
+      var found = 0;
+      var fn = function(ev) {
+        found++;
+      };
+      // down should always trigger from mouse on document
+      document.addEventListener('down', fn);
+      PolymerGestures.addEventListener(document, 'tap', fn);
+      PolymerGestures.removeEventListener(document, 'tap', fn);
+      finger.downOnNode(work, function() {
+        finger.upOnNode(work, function() {
+          assert.equal(found, 1);
+          done();
+        });
+      });
+    });
   });
 });

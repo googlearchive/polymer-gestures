@@ -22,6 +22,9 @@
       dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
+      if (target === document) {
+        return;
+      }
       dispatcher.unlisten(target, this.events);
     },
     POINTER_TYPES: [
