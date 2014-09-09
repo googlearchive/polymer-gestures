@@ -186,6 +186,20 @@
     insideNode: function(node, x, y) {
       var rect = node.getBoundingClientRect();
       return (rect.left <= x) && (x <= rect.right) && (rect.top <= y) && (y <= rect.bottom);
+    },
+    path: function(event) {
+      var p;
+      if (HAS_FULL_PATH && event.path.length) {
+        p = event.path;
+      } else {
+        p = [];
+        var n = this.findTarget(event);
+        while (n) {
+          p.push(n);
+          n = n.parentNode || n.host;
+        }
+      }
+      return p;
     }
   };
   scope.targetFinding = target;

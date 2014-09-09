@@ -13,6 +13,7 @@
  * Included are touch events (v1), mouse events, and MSPointerEvents.
  */
 (function(scope) {
+
   var dispatcher = scope.dispatcher;
   var nav = window.navigator;
 
@@ -24,19 +25,14 @@
     dispatcher.registerSource('mouse', scope.mouseEvents);
     if (window.ontouchstart !== undefined) {
       dispatcher.registerSource('touch', scope.touchEvents);
-      /*
-       * NOTE: an empty touch listener on body will reactivate nodes imported from templates with touch listeners
-       * Removing it will re-break the nodes
-       *
-       * Work around for https://bugs.webkit.org/show_bug.cgi?id=135628
-       */
-      var isSafari = nav.userAgent.match('Safari') && !nav.userAgent.match('Chrome');
-      if (isSafari) {
-        document.addEventListener('DOMContentLoaded', function() {
-          document.body.addEventListener('touchstart', function(){});
-        });
-      }
     }
   }
+
+  // Work around iOS bugs https://bugs.webkit.org/show_bug.cgi?id=135628 and https://bugs.webkit.org/show_bug.cgi?id=136506
+  var IS_IOS = navigator.userAgent.match('Safari') && !navigator.userAgent.match('Chrome') && 'ontouchstart' in window;
+
+  dispatcher.IS_IOS = IS_IOS;
+  scope.touchEvents.IS_IOS = IS_IOS;
+
   dispatcher.register(document, true);
 })(window.PolymerGestures);
