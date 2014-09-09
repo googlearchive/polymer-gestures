@@ -96,7 +96,7 @@
       return s;
     },
     findTarget: function(inEvent) {
-      if (HAS_FULL_PATH && inEvent.path) {
+      if (HAS_FULL_PATH && inEvent.path && inEvent.path.length) {
         return inEvent.path[0];
       }
       var x = inEvent.clientX, y = inEvent.clientY;
@@ -110,7 +110,7 @@
     },
     findTouchAction: function(inEvent) {
       var n;
-      if (HAS_FULL_PATH && inEvent.path) {
+      if (HAS_FULL_PATH && inEvent.path && inEvent.path.length) {
         var path = inEvent.path;
         for (var i = 0; i < path.length; i++) {
           n = path[i];
