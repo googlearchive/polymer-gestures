@@ -23,6 +23,7 @@
 
   // handler block for native touch events
   var touchEvents = {
+    IS_IOS: false,
     events: [
       'touchstart',
       'touchmove',
@@ -35,13 +36,14 @@
       'move'
     ],
     register: function(target, initial) {
-      if (initial) {
-        return;
+      if (this.IS_IOS ? initial : !initial) {
+        dispatcher.listen(target, this.events);
       }
-      dispatcher.listen(target, this.events);
     },
     unregister: function(target) {
-      dispatcher.unlisten(target, this.events);
+      if (!this.IS_IOS) {
+        dispatcher.unlisten(target, this.events);
+      }
     },
     scrollTypes: {
       EMITTER: 'none',

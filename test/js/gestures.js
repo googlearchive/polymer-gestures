@@ -124,6 +124,21 @@ suite('Platform Events', function() {
           });
         });
       });
+
+      test('tap works on svg', function(done) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.innerHTML = '<circle r="10" cx="50" cy="50" fill="black"></circle>';
+        var circle = svg.querySelector('circle');
+        inner.appendChild(svg);
+        function test(ev) {
+          done();
+        }
+        PolymerGestures.addEventListener(circle, 'tap', test);
+        finger.downOnNode(circle, function() {
+          finger.upOnNode(circle);
+        });
+      });
     });
 
     /* suite.skip('Hold, Holdpulse, and Release', function() {

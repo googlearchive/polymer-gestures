@@ -110,6 +110,7 @@
    *   - pointercancel: a pointer will no longer generate events
    */
   var dispatcher = {
+    IS_IOS: false,
     pointermap: new scope.PointerMap(),
     requiredGestures: new scope.PointerMap(),
     eventMap: Object.create(null),
@@ -189,6 +190,23 @@
       this.fireEvent('up', inEvent);
       this.requiredGestures.delete(inEvent.pointerId);
     },
+    addGestureDependency: function(node, currentGestures) {
+      var gesturesWanted = node._pgEvents;
+      if (gesturesWanted) {
+        var gk = Object.keys(gesturesWanted);
+        for (var i = 0, r, ri, g; i < gk.length; i++) {
+          // gesture
+          g = gk[i];
+          if (gesturesWanted[g] > 0) {
+            // lookup gesture recognizer
+            r = this.dependencyMap[g];
+            // recognizer index
+            ri = r ? r.index : -1;
+            currentGestures[ri] = true;
+          }
+        }
+      }
+    },
     // LISTENER LOGIC
     eventHandler: function(inEvent) {
       // This is used to prevent multiple dispatch of events from
@@ -202,21 +220,15 @@
         if (!inEvent._handledByPG) {
           currentGestures = {};
         }
-        // map gesture names to ordered set of recognizers
-        var gesturesWanted = inEvent.currentTarget._pgEvents;
-        if (gesturesWanted) {
-          var gk = Object.keys(gesturesWanted);
-          for (var i = 0, r, ri, g; i < gk.length; i++) {
-            // gesture
-            g = gk[i];
-            if (gesturesWanted[g] > 0) {
-              // lookup gesture recognizer
-              r = this.dependencyMap[g];
-              // recognizer index
-              ri = r ? r.index : -1;
-              currentGestures[ri] = true;
-            }
+        // in IOS mode, there is only a listener on the document, so this is not re-entrant
+        if (this.IS_IOS) {
+          var nodes = scope.targetFinding.path(inEvent);
+          for (var i = 0, n; i < nodes.length; i++) {
+            n = nodes[i];
+            this.addGestureDependency(n, currentGestures);
           }
+        } else {
+          this.addGestureDependency(inEvent.currentTarget, currentGestures);
         }
       }
 
