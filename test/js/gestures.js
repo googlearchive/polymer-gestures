@@ -128,8 +128,12 @@ suite('Platform Events', function() {
       test('tap works on svg', function(done) {
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('viewBox', '0 0 100 100');
-        svg.innerHTML = '<circle r="10" cx="50" cy="50" fill="black"></circle>';
-        var circle = svg.querySelector('circle');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('r', '10');
+        circle.setAttribute('cx', '50');
+        circle.setAttribute('cy', '50');
+        circle.setAttribute('fill', 'black');
+        svg.appendChild(circle);
         inner.appendChild(svg);
         function test(ev) {
           done();
