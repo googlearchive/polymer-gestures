@@ -29,7 +29,8 @@
   }
 
   // Work around iOS bugs https://bugs.webkit.org/show_bug.cgi?id=135628 and https://bugs.webkit.org/show_bug.cgi?id=136506
-  var IS_IOS = navigator.userAgent.match('Safari') && !navigator.userAgent.match('Chrome') && 'ontouchstart' in window;
+  var ua = navigator.userAgent;
+  var IS_IOS = ua.match(/iPad|iPhone|iPod/) && 'ontouchstart' in window;
 
   dispatcher.IS_IOS = IS_IOS;
   scope.touchEvents.IS_IOS = IS_IOS;

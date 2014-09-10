@@ -121,7 +121,7 @@
       } else {
         n = inEvent.target;
         while(n) {
-          if (n.hasAttribute('touch-action')) {
+          if (n.nodeType === Node.ELEMENT_NODE && n.hasAttribute('touch-action')) {
             return n.getAttribute('touch-action');
           }
           n = n.parentNode || n.host;
@@ -189,7 +189,7 @@
     },
     path: function(event) {
       var p;
-      if (HAS_FULL_PATH && event.path.length) {
+      if (HAS_FULL_PATH && event.path && event.path.length) {
         p = event.path;
       } else {
         p = [];
