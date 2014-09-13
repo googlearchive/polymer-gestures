@@ -37,7 +37,7 @@ npm install
 grunt
 ```
 
-## Hot to run
+## How to run
 ```bash
 cd gestures
 python -m SimpleHTTPServer
