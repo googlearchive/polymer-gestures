@@ -23,7 +23,8 @@
     'src/platform-events.js',
     'src/track.js',
     'src/hold.js',
-    'src/tap.js'
+    'src/tap.js',
+    'src/pinch.js'
   ];
 
   window[scopeName] = {
