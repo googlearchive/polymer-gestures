@@ -69,6 +69,10 @@
       'pinch',
       'rotate'
     ],
+    defaultActions: {
+      'pinch': 'none',
+      'rotate': 'none'
+    },
     reference: {},
     down: function(inEvent) {
       pointermap.set(inEvent.pointerId, inEvent);
@@ -102,18 +106,24 @@
     firePinch: function(diameter, points) {
       var zoom = diameter / this.reference.diameter;
       var e = eventFactory.makeGestureEvent('pinch', {
+        bubbles: true,
+        cancelable: true,
         scale: zoom,
         centerX: points.center.x,
-        centerY: points.center.y
+        centerY: points.center.y,
+        _source: 'pinch'
       });
       this.reference.target.dispatchEvent(e);
     },
     fireRotate: function(angle, points) {
       var diff = Math.round((angle - this.reference.angle) % 360);
       var e = eventFactory.makeGestureEvent('rotate', {
+        bubbles: true,
+        cancelable: true,
         angle: diff,
         centerX: points.center.x,
-        centerY: points.center.y
+        centerY: points.center.y,
+        _source: 'pinch'
       });
       this.reference.target.dispatchEvent(e);
     },
