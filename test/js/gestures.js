@@ -44,7 +44,7 @@ suite('Platform Events', function() {
         function test(ev) {
           PolymerGestures.removeEventListener(document, 'up', test);
           assert.isTrue(ev.isPrimary);
-          assert.propertyVal(ev, 'buttons', 1);
+          assert.propertyVal(ev, 'buttons', 0);
           assert.propertyVal(ev, 'pointerId', 1);
           assert.property(ev, '_source');
           assert.property(ev, 'x');

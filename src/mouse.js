@@ -15,6 +15,7 @@
 
   var WHICH_TO_BUTTONS = [0, 1, 4, 2];
 
+  var CURRENT_BUTTONS = 0;
   var HAS_BUTTONS = false;
   try {
     HAS_BUTTONS = new MouseEvent('test', {buttons: 1}).buttons === 1;
@@ -62,8 +63,12 @@
       e.isPrimary = true;
       e.pointerType = this.POINTER_TYPE;
       e._source = 'mouse';
-      if (!HAS_BUTTONS || (inEvent.type === 'mouseup' && inEvent.buttons === 0)) {
-        e.buttons = WHICH_TO_BUTTONS[e.which] || 0;
+      if (!HAS_BUTTONS) {
+        var type = inEvent.type;
+        if (type !== 'mousemove') {
+          CURRENT_BUTTONS ^= (WHICH_TO_BUTTONS[e.which] || 0);
+        }
+        e.buttons = CURRENT_BUTTONS;
       }
       return e;
     },

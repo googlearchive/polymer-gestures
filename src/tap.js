@@ -61,7 +61,7 @@
     shouldTap: function(e, downState) {
       if (e.pointerType === 'mouse') {
         // only allow left click to tap for mouse
-        return e.buttons === 1 && downState.buttons === 1;
+        return (e.buttons ^ 1) && (downState.buttons & 1);
       }
       return !e.tapPrevented;
     },

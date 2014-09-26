@@ -56,7 +56,7 @@
         cancelable: true,
         clientX: x,
         clientY: y,
-        buttons: 1,
+        buttons: type === 'up' ? 0 : 1,
         pointerId: 1,
         isPrimary: true,
         pointerType: 'mouse'
