@@ -67,8 +67,8 @@
     // TODO(dfreedm): this is overridden by tap recognizer, needs review
     preventTap: NOP_FACTORY,
     makeBaseEvent: function(inType, inDict) {
-      var e = document.createEvent('Event');
-      e.initEvent(inType, inDict.bubbles || false, inDict.cancelable || false);
+      var e = document.createEvent('CustomEvent');
+      e.initCustomEvent(inType, inDict.bubbles || false, inDict.cancelable || false,{});
       e.preventTap = eventFactory.preventTap(e);
       return e;
     },
@@ -89,9 +89,9 @@
       // define inherited MouseEvent properties
       for(var i = 0, p; i < MOUSE_PROPS.length; i++) {
         p = MOUSE_PROPS[i];
-        e[p] = inDict[p] || MOUSE_DEFAULTS[i];
+        e[p] = e.detail[p] = inDict[p] || MOUSE_DEFAULTS[i];
       }
-      e.buttons = inDict.buttons || 0;
+      e.buttons = e.detail.buttons = inDict.buttons || 0;
 
       // Spec requires that pointers without pressure specified use 0.5 for down
       // state and 0 for up state.
@@ -103,20 +103,20 @@
       }
 
       // add x/y properties aliased to clientX/Y
-      e.x = e.clientX;
-      e.y = e.clientY;
+      e.x = e.detail.x = e.clientX;
+      e.y = e.detail.y = e.clientY;
 
       // define the properties of the PointerEvent interface
-      e.pointerId = inDict.pointerId || 0;
-      e.width = inDict.width || 0;
-      e.height = inDict.height || 0;
-      e.pressure = pressure;
-      e.tiltX = inDict.tiltX || 0;
-      e.tiltY = inDict.tiltY || 0;
-      e.pointerType = inDict.pointerType || '';
-      e.hwTimestamp = inDict.hwTimestamp || 0;
-      e.isPrimary = inDict.isPrimary || false;
-      e._source = inDict._source || '';
+      e.pointerId = e.detail.pointerId = inDict.pointerId || 0;
+      e.width = e.detail.width = inDict.width || 0;
+      e.height = e.detail.height = inDict.height || 0;
+      e.pressure = e.detail.pressure = pressure;
+      e.tiltX = e.detail.tiltX = inDict.tiltX || 0;
+      e.tiltY = e.detail.tiltY = inDict.tiltY || 0;
+      e.pointerType = e.detail.pointerType = inDict.pointerType || '';
+      e.hwTimestamp = e.detail.hwTimestamp = inDict.hwTimestamp || 0;
+      e.isPrimary = e.isPrimary = inDict.isPrimary || false;
+      e._source = e.detail._source = inDict._source || '';
       return e;
     }
   };
