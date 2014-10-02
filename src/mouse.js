@@ -90,10 +90,13 @@
       if (!this.isEventSimulatedFromTouch(inEvent)) {
         var target = pointermap.get(this.POINTER_ID);
         if (target) {
+          var t = inEvent.currentTarget;
+          console.log(inEvent.path, inEvent.eventPhase);
+          console.log(t.localName || t.nodeType);
           var e = this.prepareEvent(inEvent);
           e.target = target;
           // handle case where we missed a mouseup
-          if (e.buttons === 0) {
+          if (e.which === 0) {
             dispatcher.cancel(e);
             this.cleanupMouse();
           } else {

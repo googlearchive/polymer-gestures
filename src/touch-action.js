@@ -52,9 +52,11 @@
         }
       }
     });
-
-    var el = document.createElement('style');
-    el.textContent = styles;
-    document.head.appendChild(el);
   }
+
+  styles += 'body.polymerGesturesPreventSelection{user-select:none;-ms-user-select:none;-moz-user-select:none;-webkit-user-select:none;}';
+
+  var el = document.createElement('style');
+  el.textContent = styles;
+  document.head.appendChild(el);
 })();
