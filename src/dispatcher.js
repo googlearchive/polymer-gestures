@@ -222,7 +222,12 @@
         }
         // in IOS mode, there is only a listener on the document, so this is not re-entrant
         if (this.IS_IOS) {
-          var nodes = scope.targetFinding.path(inEvent);
+          var ev = inEvent;
+          if (type === 'touchstart') {
+            var ct = inEvent.changedTouches[0];
+            ev = {target: inEvent.target, clientX: ct.clientX, clientY: ct.clientY};
+          }
+          var nodes = scope.targetFinding.path(ev);
           for (var i = 0, n; i < nodes.length; i++) {
             n = nodes[i];
             this.addGestureDependency(n, currentGestures);
