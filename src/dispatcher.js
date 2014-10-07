@@ -334,13 +334,15 @@
       for (var i = 0, e, rg; i < this.gestureQueue.length; i++) {
         e = this.gestureQueue[i];
         rg = e._requiredGestures;
-        for (var j = 0, g, fn; j < this.gestures.length; j++) {
-          // only run recognizer if an element in the source event's path is listening for those gestures
-          if (rg[j]) {
-            g = this.gestures[j];
-            fn = g[e.type];
-            if (fn) {
-              fn.call(g, e);
+        if (rg) {
+          for (var j = 0, g, fn; j < this.gestures.length; j++) {
+            // only run recognizer if an element in the source event's path is listening for those gestures
+            if (rg[j]) {
+              g = this.gestures[j];
+              fn = g[e.type];
+              if (fn) {
+                fn.call(g, e);
+              }
             }
           }
         }

@@ -59,11 +59,12 @@
       }
     },
     shouldTap: function(e, downState) {
+      var tap = true;
       if (e.pointerType === 'mouse') {
         // only allow left click to tap for mouse
-        return (e.buttons ^ 1) && (downState.buttons & 1);
+        tap = (e.buttons ^ 1) && (downState.buttons & 1);
       }
-      return !e.tapPrevented;
+      return tap && !e.tapPrevented;
     },
     up: function(inEvent) {
       var start = pointermap.get(inEvent.pointerId);
