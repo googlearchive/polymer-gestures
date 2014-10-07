@@ -65,8 +65,11 @@
       e._source = 'mouse';
       if (!HAS_BUTTONS) {
         var type = inEvent.type;
-        if (type !== 'mousemove') {
-          CURRENT_BUTTONS ^= (WHICH_TO_BUTTONS[e.which] || 0);
+        var bit = WHICH_TO_BUTTONS[inEvent.which] || 0;
+        if (type === 'mousedown') {
+          CURRENT_BUTTONS |= bit;
+        } else if (type === 'mouseup') {
+          CURRENT_BUTTONS &= ~bit;
         }
         e.buttons = CURRENT_BUTTONS;
       }
@@ -75,11 +78,6 @@
     mousedown: function(inEvent) {
       if (!this.isEventSimulatedFromTouch(inEvent)) {
         var p = pointermap.has(this.POINTER_ID);
-        // TODO(dfreedman) workaround for some elements not sending mouseup
-        // http://crbug/149091
-        if (p) {
-          this.mouseup(inEvent);
-        }
         var e = this.prepareEvent(inEvent);
         e.target = scope.findTarget(inEvent);
         pointermap.set(this.POINTER_ID, e.target);
@@ -93,9 +91,12 @@
           var e = this.prepareEvent(inEvent);
           e.target = target;
           // handle case where we missed a mouseup
-          if (e.buttons === 0) {
+          if ((HAS_BUTTONS ? e.buttons : e.which) === 0) {
+            if (!HAS_BUTTONS) {
+              CURRENT_BUTTONS = e.buttons = 0;
+            }
             dispatcher.cancel(e);
-            this.cleanupMouse();
+            this.cleanupMouse(e.buttons);
           } else {
             dispatcher.move(e);
           }
@@ -108,11 +109,13 @@
         e.relatedTarget = scope.findTarget(inEvent);
         e.target = pointermap.get(this.POINTER_ID);
         dispatcher.up(e);
-        this.cleanupMouse();
+        this.cleanupMouse(e.buttons);
       }
     },
-    cleanupMouse: function() {
-      pointermap['delete'](this.POINTER_ID);
+    cleanupMouse: function(buttons) {
+      if (buttons === 0) {
+        pointermap.delete(this.POINTER_ID);
+      }
     }
   };
 
