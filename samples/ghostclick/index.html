@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ghostclick</title>
+  <script src="../../polymer-gestures.js"></script>
+  <style>
+    #background {
+      height: 200px;
+      width: 200px;
+      background: black;
+      position: relative;
+    }
+    #foreground {
+      height: 100px;
+      width: 100px;
+      margin: 50px;
+      background: red;
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+  <div id="background" touch-action="none">
+    <div id="foreground"></div>
+  </div>
+  <button>Reset</button>
+  <script>
+    document.querySelector('button').addEventListener('click', function() {
+      bg.appendChild(fg);
+    });
+
+    pgae = PolymerGestures.addEventListener.bind(PolymerGestures);
+
+    var fg = document.getElementById('foreground');
+    var bg = document.getElementById('background');
+
+    pgae(bg, 'click', function() {
+      console.log('ghostclick on bg');
+    });
+
+    pgae(fg, 'tap', function(ev) {
+      console.log('tap on fg');
+      bg.removeChild(fg);
+    });
+
+    pgae(fg, 'click', function(ev) {
+      console.log('click on fg');
+    });
+  </script>
+</body>
+</html>
