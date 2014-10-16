@@ -14,6 +14,7 @@
   var touchMap = Array.prototype.map.call.bind(Array.prototype.map);
   // This should be long enough to ignore compat mouse events made by touch
   var DEDUP_TIMEOUT = 2500;
+  var DEDUP_DIST = 25;
   var CLICK_COUNT_TIMEOUT = 200;
   var HYSTERESIS = 20;
   var ATTRIB = 'touch-action';
@@ -73,6 +74,7 @@
       if (pointermap.pointers() === 0 || (pointermap.pointers() === 1 && pointermap.has(1))) {
         this.firstTouch = inTouch.identifier;
         this.firstXY = {X: inTouch.clientX, Y: inTouch.clientY};
+        this.firstTarget = inTouch.target;
         this.scrolling = null;
         this.cancelResetClickCount();
       }
@@ -309,6 +311,25 @@
       }
     }
   };
+
+  // prevent "ghost clicks" that come from elements that were removed in a touch handler
+  var STOP_PROP_FN = Event.prototype.stopImmediatePropagation || Event.prototype.stopPropagation;
+  document.addEventListener('click', function(ev) {
+    var x = ev.clientX, y = ev.clientY;
+    // check if a click is within DEDUP_DIST px radius of the touchstart
+    var closeTo = function(touch) {
+      var dx = Math.abs(x - touch.x), dy = Math.abs(y - touch.y);
+      return (dx <= DEDUP_DIST && dy <= DEDUP_DIST);
+    };
+    // if click coordinates are close to touch coordinates, assume the click came from a touch
+    var wasTouched = scope.mouseEvents.lastTouches.some(closeTo);
+    // if the click came from touch, and the click target is not the same as the touchstart target, then the touchstart
+    // target was probably removed, and the click should be "busted"
+    if (wasTouched && (ev.target !== touchEvents.firstTarget)) {
+      ev.preventDefault();
+      STOP_PROP_FN.call(ev);
+    }
+  }, true);
 
   scope.touchEvents = touchEvents;
 })(window.PolymerGestures);
