@@ -225,9 +225,11 @@
           var ev = inEvent;
           if (type === 'touchstart') {
             var ct = inEvent.changedTouches[0];
-            ev = {target: inEvent.target, clientX: ct.clientX, clientY: ct.clientY};
+            // set up a fake event to give to the path builder
+            ev = {target: inEvent.target, clientX: ct.clientX, clientY: ct.clientY, path: inEvent.path};
           }
-          var nodes = scope.targetFinding.path(ev);
+          // use event path if available, otherwise build a path from target finding
+          var nodes = inEvent.path || scope.targetFinding.path(ev);
           for (var i = 0, n; i < nodes.length; i++) {
             n = nodes[i];
             this.addGestureDependency(n, currentGestures);
