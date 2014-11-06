@@ -16,7 +16,7 @@ Supported events:
 * pinch
 
 Not yet implemented:
-* flick
+* swipe
 * hold
 * holdpulse
 * release
