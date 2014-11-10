@@ -192,7 +192,7 @@
     },
     addGestureDependency: function(node, currentGestures) {
       var gesturesWanted = node._pgEvents;
-      if (gesturesWanted) {
+      if (gesturesWanted && currentGestures) {
         var gk = Object.keys(gesturesWanted);
         for (var i = 0, r, ri, g; i < gk.length; i++) {
           // gesture
@@ -220,6 +220,7 @@
         if (!inEvent._handledByPG) {
           currentGestures = {};
         }
+
         // in IOS mode, there is only a listener on the document, so this is not re-entrant
         if (this.IS_IOS) {
           var ev = inEvent;
