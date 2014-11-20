@@ -125,7 +125,7 @@
       }
     },
     cleanupMouse: function(buttons) {
-      if (buttons === 0) {
+      if (buttons === 0 || buttons === 1) {
         pointermap.delete(this.POINTER_ID);
       }
     }
