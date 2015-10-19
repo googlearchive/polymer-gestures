@@ -17,9 +17,9 @@ Supported events:
 * hold
 * holdpulse
 * release
+* flick
 
 Not yet implemented:
-* flick
 * pinchstart
 * pinchend
 
