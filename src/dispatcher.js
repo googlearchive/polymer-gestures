@@ -47,7 +47,8 @@
     // gesture addons
     'preventTap',
     'tapPrevented',
-    '_source'
+    '_source',
+    '_touchEvent'
   ];
 
   var CLONE_DEFAULTS = [
@@ -87,7 +88,8 @@
     0,
     0,
     function(){},
-    false
+    false,
+    null
   ];
 
   var HAS_SVG_INSTANCE = (typeof SVGElementInstance !== 'undefined');
