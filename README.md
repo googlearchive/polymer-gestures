@@ -1,3 +1,5 @@
+> This project is **deprecated**. Please see: https://www.polymer-project.org/1.0/docs/devguide/events.html#gestures
+
 ## pointer-gestures
 > A set of rich gestures for desktop and mobile.
 
