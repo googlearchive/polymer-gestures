@@ -49,7 +49,7 @@
       'tap'
     ],
     down: function(inEvent) {
-      if (inEvent.isPrimary && !inEvent.tapPrevented) {
+      if (!inEvent.tapPrevented) {
         pointermap.set(inEvent.pointerId, {
           target: inEvent.target,
           buttons: inEvent.buttons,
