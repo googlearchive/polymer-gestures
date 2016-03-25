@@ -16,14 +16,12 @@ Supported events:
     * Targets the nearest common ancestor of down and up.relatedTarget
     * Can be prevented by calling any gesture event's preventTap function
 * pinch
+* flick
+
+Not yet implemented:
 * hold
 * holdpulse
 * release
-
-Not yet implemented:
-* flick
-* pinchstart
-* pinchend
 
 More info — https://groups.google.com/forum/#!topic/polymer-dev/ba4aDyOozm8
 

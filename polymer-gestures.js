@@ -24,7 +24,8 @@
     'src/track.js',
     'src/hold.js',
     'src/tap.js',
-    'src/pinch.js'
+    'src/pinch.js',
+    'src/flick.js'
   ];
 
   window[scopeName] = {
